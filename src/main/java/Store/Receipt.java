@@ -3,21 +3,24 @@ package Store;
 import Store.People.Cashier;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class Receipt {
-    public static int num_instances = 0;
-    public int id_number;
-    public Cashier cashier;
-    public LocalDate date;
-    public Checkout checkout;
+    private static int num_instances = 0;
+    private int id_number;
+    private Cashier cashier;
+    private LocalDate date;
+    private List<Item> itemsBoughtList;
+    private double sum;
 
-    public Receipt( Cashier cashier, LocalDate date, Checkout checkout) {
+
+    public Receipt( Cashier cashier, LocalDate date, List<Item> itemsBoughtList, double sum) {
         num_instances++;
         this.id_number = num_instances;
-
         this.cashier = cashier;
         this.date = date;
-        this.checkout = checkout;
+        this.itemsBoughtList = itemsBoughtList;
+        this.sum = sum;
     }
 
     @Override
@@ -26,7 +29,8 @@ public class Receipt {
                 "id_number=" + id_number +
                 ", cashier=" + cashier +
                 ", date=" + date +
-                ", checkout=" + checkout +
+                ", itemsBoughtList=" + itemsBoughtList +
+                ", sum=" + sum +
                 '}';
     }
 }

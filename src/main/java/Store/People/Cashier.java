@@ -14,4 +14,20 @@ public class Cashier {
         this.monthlySalary = monthlySalary;
         this.checkout = checkout;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getIdNumber() {
+        return idNumber;
+    }
+
+    public double getMonthlySalary() {
+        return monthlySalary;
+    }
+
+    public Checkout getCheckout() {
+        return checkout;
+    }
 }

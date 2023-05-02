@@ -1,9 +1,13 @@
 package Store.People;
 
 public class Client {
-    public double budget;
+    private double budget;
 
     public Client(double budget) {
         this.budget = budget;
+    }
+
+    public double getBudget() {
+        return budget;
     }
 }

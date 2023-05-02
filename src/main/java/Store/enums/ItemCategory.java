@@ -1,10 +1,10 @@
-package Store;
+package Store.enums;
 
-public enum itemCategory {
+public enum ItemCategory {
     CONSUMABLE(0), NONCONSUMABLE(0);
     int percentageMarkup;
 
-    itemCategory(int percentageMarkup) {
+    ItemCategory(int percentageMarkup) {
         this.percentageMarkup = percentageMarkup;
     }
 

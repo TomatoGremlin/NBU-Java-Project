@@ -9,7 +9,7 @@ import java.util.List;
 public class ioReceipt {
     public static void writeReceipt(String outputFile, Receipt bill){
 
-        try(FileWriter fout = new FileWriter( new File( outputFile ), true);  ){
+        try(FileWriter fout = new FileWriter( new File( outputFile ), true)  ){
 
             fout.append( bill.toString() + System.lineSeparator() );
 

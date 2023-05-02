@@ -35,7 +35,7 @@ public class Checkout {
         return sumOwed;
     }
     public boolean hasTransactionPassed(double sumOwed){
-        if (client.budget >= sumOwed){
+        if (client.getBudget() >= sumOwed){
             return true;
             //TODO make a function that writes in a file the data for the items that take boolen value as parameter
             // and a function that reads the data to print it into the console(?)
@@ -47,7 +47,7 @@ public class Checkout {
 
     public int countInstances(Item item){
         int counter = 0;
-        for (Item currentItem: store.itemsAvailable ) {
+        for (Item currentItem: store.getItemsAvailable() ) {
             if(currentItem.equals(item)){
                 counter++;
             }
@@ -61,7 +61,7 @@ public class Checkout {
             return true;
         }
         else{
-            throw new ItemAmountUnavailableException( item.name + " only has "+ unitsAvailable +
+            throw new ItemAmountUnavailableException( item.getName() + " only has "+ unitsAvailable +
                     " when " + itemAmount + " are needed", unitsAvailable);
         }
     }
