@@ -1,11 +1,13 @@
 package Store;
 
 import Store.enums.ItemCategory;
+import exeptions.ItemHasExpiredException;
 
 import java.time.Duration;
 import java.time.LocalDate;
 
 public class Item {
+    // items should be in map
     private String idNumber;
     private String name;
     private double deliveryPrice;
@@ -22,23 +24,31 @@ public class Item {
         this.expirationDate = expirationDate;
     }
 
-    public double calculateSellingPrice(){
+    public long getDaysTillExpiration(){
         Duration duration = Duration.between( LocalDate.now().atStartOfDay(), expirationDate.atStartOfDay() );
         long remainingDays = duration.toDays();
-
-        double sellingPrice = deliveryPrice + ( deliveryPrice * category.getPercentageMarkup() ) / 100;
-        if(remainingDays < 0){
-            return 0;
+        return remainingDays;
+    }
+    public boolean hasExpired(){
+        if(getDaysTillExpiration() < 0) {
+            return true;
         }
-        if (remainingDays < store.getDaysTillExpirationAllowed()){
+        return false;
+    }
+    public double calculateSellingPrice(){
+        double sellingPrice = deliveryPrice + ( deliveryPrice * category.getPercentageMarkup() ) / 100;
+
+        if (getDaysTillExpiration() < store.getDaysTillExpirationAllowed()){
             return sellingPrice - ( sellingPrice * store.getPercentageSale()) / 100;
         }
-        else{
-            return sellingPrice;
-        }
-
+        return sellingPrice;
     }
-
+    public boolean sellItem()throws ItemHasExpiredException {
+        if(hasExpired()){
+            throw new ItemHasExpiredException("Item cannot be sold because it has expired");
+        }
+        return true;
+    }
 
     @Override
     public String toString() {

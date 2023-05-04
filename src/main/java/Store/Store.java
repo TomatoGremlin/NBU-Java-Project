@@ -2,23 +2,30 @@ package Store;
 
 import Store.People.Cashier;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 public class Store {
     private int daysTillExpirationAllowed;
     private int percentageSale;
-    private List<Item>itemsAvailable;
-    private List<Cashier>cashiersList;
-    private List<Item>soldItemsList;
-    private List<Receipt>receiptsList;
+    private HashSet<Cashier>cashiersList; // hash set + da se napravi da se razlichavat po primerno id zashtoto inache shte e po referenciq
+    private Map<Item, Integer> itemsAvailable;
+    private Map<Item, Integer> soldItemsList;
+    private HashSet<Checkout> receiptsList; // hash set
 
-    public Store(int daysTillExpirationAllowed, int percentageSale, List<Item> itemsAvailable) {
+
+    public Store(int daysTillExpirationAllowed, int percentageSale, HashSet<Cashier> cashiersList, Map<Item, Integer> itemsAvailable) {
         this.daysTillExpirationAllowed = daysTillExpirationAllowed;
         this.percentageSale = percentageSale;
+        this.cashiersList = cashiersList;
         this.itemsAvailable = itemsAvailable;
+        this.soldItemsList = new HashMap<>();
+        this.receiptsList = new HashSet<>();
     }
 
-     public double calculateTotalRevenue(){
+    public double calculateTotalRevenue(){
         return calculateItemsSoldRevenue() - (calculateCashiersSalaries() + calculateDeliveryCosts());
      }
      public double calculateCashiersSalaries(){
