@@ -10,13 +10,13 @@ import java.util.Map;
 public class Store {
     private int daysTillExpirationAllowed;
     private int percentageSale;
-    private HashSet<Cashier>cashiersList; // hash set + da se napravi da se razlichavat po primerno id zashtoto inache shte e po referenciq
+    private HashSet<Cashier>cashiersList; // hash set differentiating by id because otherwise it would be by referential
     private Map<Item, Integer> itemsAvailable;
     private Map<Item, Integer> soldItemsList;
     private HashSet<Checkout> receiptsList; // hash set
 
 
-    public Store(int daysTillExpirationAllowed, int percentageSale, HashSet<Cashier> cashiersList, Map<Item, Integer> itemsAvailable) {
+    public Store( int daysTillExpirationAllowed, int percentageSale, HashSet<Cashier> cashiersList, Map<Item, Integer> itemsAvailable ) {
         this.daysTillExpirationAllowed = daysTillExpirationAllowed;
         this.percentageSale = percentageSale;
         this.cashiersList = cashiersList;
@@ -27,29 +27,28 @@ public class Store {
 
     public double calculateTotalRevenue(){
         return calculateItemsSoldRevenue() - (calculateCashiersSalaries() + calculateDeliveryCosts());
-     }
+    }
      public double calculateCashiersSalaries(){
          double sum = 0;
-         for ( Cashier currentCashier:cashiersList ) {
+         for ( Cashier currentCashier: cashiersList ) {
              sum += currentCashier.getMonthlySalary();
          }
          return sum;
      }
      public double calculateDeliveryCosts(){
          double sum = 0;
-         for ( Item currentItem: soldItemsList ) {
-             sum += currentItem.getDeliveryPrice();
+         for (Map.Entry<Item, Integer> entry: soldItemsList.entrySet()) {
+             sum += entry.getKey().getDeliveryPrice() * entry.getValue();
          }
          return sum;
      }
     public double calculateItemsSoldRevenue(){
         double sum = 0;
-        for ( Item currentItem: soldItemsList ) {
-            sum += currentItem.calculateSellingPrice();
+        for (Map.Entry<Item, Integer> entry: soldItemsList.entrySet()) {
+            sum += entry.getKey().calculateSellingPrice() * entry.getValue();
         }
         return sum;
     }
-
 
 
     public int getDaysTillExpirationAllowed() {
@@ -60,19 +59,32 @@ public class Store {
         return percentageSale;
     }
 
-    public List<Item> getItemsAvailable() {
-        return itemsAvailable;
-    }
-
-    public List<Cashier> getCashiersList() {
+    public HashSet<Cashier> getCashiersList() {
         return cashiersList;
     }
 
-    public List<Item> getSoldItemsList() {
+    public Map<Item, Integer> getItemsAvailable() {
+        return itemsAvailable;
+    }
+
+    public Map<Item, Integer> getSoldItemsList() {
         return soldItemsList;
     }
 
-    public List<Receipt> getReceiptsList() {
+    public HashSet<Checkout> getReceiptsList() {
         return receiptsList;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Store {" +
+                "daysTillExpirationAllowed=" + daysTillExpirationAllowed +
+                ", percentageSale=" + percentageSale +
+                ", cashiersList=" + cashiersList +
+                ", itemsAvailable=" + itemsAvailable +
+                ", soldItemsList=" + soldItemsList +
+                ", receiptsList=" + receiptsList +
+                '}';
     }
 }

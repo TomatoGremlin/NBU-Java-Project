@@ -5,6 +5,7 @@ import exeptions.ItemHasExpiredException;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Item {
     // items should be in map
@@ -84,5 +85,19 @@ public class Item {
 
     public Store getStore() {
         return store;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return Objects.equals(idNumber, item.idNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idNumber);
     }
 }

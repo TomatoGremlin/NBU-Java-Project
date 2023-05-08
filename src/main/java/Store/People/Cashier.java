@@ -2,6 +2,8 @@ package Store.People;
 
 import Store.Checkout;
 
+import java.util.Objects;
+
 public class Cashier {
     private String name;
     private String idNumber;
@@ -29,5 +31,28 @@ public class Cashier {
 
     public Checkout getCheckout() {
         return checkout;
+    }
+
+    @Override
+    public String toString() {
+        return "Cashier{" +
+                "name='" + name + '\'' +
+                ", idNumber='" + idNumber + '\'' +
+                ", monthlySalary=" + monthlySalary +
+                ", checkout=" + checkout +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Cashier cashier = (Cashier) o;
+        return Objects.equals(idNumber, cashier.idNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idNumber);
     }
 }

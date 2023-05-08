@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class Receipt {
     private static int num_instances = 0;
@@ -22,22 +23,36 @@ public class Receipt {
         this.id_number = num_instances;
         this.cashier = cashier;
         this.date = LocalDate.from(date);
-        this.itemsBoughtList = itemsBoughtList;
+        this.itemsBought = itemsBoughtList;
     }
 
-    public double sumItems() throws ItemAmountUnavailableException {
-        double sumOwed = 0;
-        for (Item currentItem: items ) {
-
-            if (checkForAvailability(currentItem, itemAmount )){
-                sumOwed += currentItem.calculateSellingPrice();
-            }
-            else{
-                throw new ItemAmountUnavailableException( item.getName() + " only has "+ unitsAvailable +
-                        " when " + itemAmount + " are needed", unitsAvailable);
-            }
+    public double getTotalSumOfItems() {
+        double sum = 0;
+        for (Map.Entry<Item, Integer> entry: itemsBought.entrySet()) {
+            sum += entry.getKey().calculateSellingPrice() * entry.getValue();
         }
-        return sumOwed;
+        return sum;
+    }
+
+
+    public static int getNum_instances() {
+        return num_instances;
+    }
+
+    public int getId_number() {
+        return id_number;
+    }
+
+    public Cashier getCashier() {
+        return cashier;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public Map<Item, Integer> getItemsBought() {
+        return itemsBought;
     }
 
     @Override
@@ -46,8 +61,20 @@ public class Receipt {
                 "id_number=" + id_number +
                 ", cashier=" + cashier +
                 ", date=" + date +
-                ", itemsBoughtList=" + itemsBoughtList +
-                ", sum=" + sum +
+                ", itemsBought=" + itemsBought +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Receipt receipt = (Receipt) o;
+        return id_number == receipt.id_number;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id_number);
     }
 }
