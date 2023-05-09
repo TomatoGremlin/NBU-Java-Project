@@ -5,6 +5,8 @@ import exeptions.ItemAmountUnavailableException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -13,23 +15,23 @@ public class Receipt {
     private static int num_instances = 0;
     private int id_number;
     private Cashier cashier;
-    private LocalDate date;
-    private Map<Item, Integer> itemsBought ;
+    private LocalDateTime dateTime;
+    private Map<Item, Double> itemsBought ;
 
 
 
-    public Receipt(Cashier cashier, LocalDateTime date, Map<Item, Integer> itemsBoughtList) {
+    public Receipt(Cashier cashier, Map<Item, Double> itemsBoughtList) {
         num_instances++;
         this.id_number = num_instances;
         this.cashier = cashier;
-        this.date = LocalDate.from(date);
+        this.dateTime = LocalDateTime.now();
         this.itemsBought = itemsBoughtList;
     }
 
     public double getTotalSumOfItems() {
         double sum = 0;
-        for (Map.Entry<Item, Integer> entry: itemsBought.entrySet()) {
-            sum += entry.getKey().calculateSellingPrice() * entry.getValue();
+        for (Map.Entry<Item, Double> entry: itemsBought.entrySet()) {
+            sum += entry.getKey().calculateFinalSellingPrice() * entry.getValue();
         }
         return sum;
     }
@@ -47,23 +49,42 @@ public class Receipt {
         return cashier;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDateTime getDate() {
+        return dateTime;
     }
 
-    public Map<Item, Integer> getItemsBought() {
+    public Map<Item, Double> getItemsBought() {
         return itemsBought;
     }
 
-    @Override
-    public String toString() {
-        return "Receipt{" +
-                "id_number=" + id_number +
-                ", cashier=" + cashier +
-                ", date=" + date +
-                ", itemsBought=" + itemsBought +
-                '}';
+
+    public String formatReceipt() {
+        StringBuilder receiptBuilder = new StringBuilder();
+
+        // Receipt header
+        receiptBuilder.append("Customer Receipt Copy").append("\n");
+        receiptBuilder.append("Receipt ID: ").append(id_number).append("\n");
+        receiptBuilder.append("Cashier: ").append(cashier.getName()).append("\n");
+        receiptBuilder.append("Date and Time: ").append(dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).append("\n");
+
+        receiptBuilder.append("=======================================================");
+        // Receipt items
+        receiptBuilder.append("Items Bought:\n");
+        for (Map.Entry<Item, Double> entry : itemsBought.entrySet()) {
+            Item item = entry.getKey();
+            double quantity = entry.getValue();
+            receiptBuilder.append("- ").append(item.getName()).append("\t\t").append(quantity).append("\n");
+            receiptBuilder.append(item.calculateFinalSellingPrice()).append("\n");
+        }
+
+        receiptBuilder.append("=======================================================");
+
+        // Receipt footer
+        receiptBuilder.append("Total: ").append(getTotalSumOfItems()).append("\n");
+
+        return receiptBuilder.toString();
     }
+
 
     @Override
     public boolean equals(Object o) {

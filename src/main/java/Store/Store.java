@@ -4,30 +4,45 @@ import Store.People.Cashier;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
 public class Store {
     private int daysTillExpirationAllowed;
     private int percentageSale;
     private HashSet<Cashier>cashiersList; // hash set differentiating by id because otherwise it would be by referential
-    private Map<Item, Integer> itemsAvailable;
-    private Map<Item, Integer> soldItemsList;
-    private HashSet<Checkout> receiptsList; // hash set
+    private Map<Item, Double> itemsAvailable;
+    private Map<Item, Double> soldItemsList;
+    private HashSet<Register> registers;
 
 
-    public Store( int daysTillExpirationAllowed, int percentageSale, HashSet<Cashier> cashiersList, Map<Item, Integer> itemsAvailable ) {
+    public Store( int daysTillExpirationAllowed, int percentageSale, HashSet<Cashier> cashiersList, Map<Item, Double> itemsAvailable ) {
         this.daysTillExpirationAllowed = daysTillExpirationAllowed;
         this.percentageSale = percentageSale;
         this.cashiersList = cashiersList;
         this.itemsAvailable = itemsAvailable;
         this.soldItemsList = new HashMap<>();
-        this.receiptsList = new HashSet<>();
+        this.registers = new HashSet<>();
     }
 
-    public double calculateTotalRevenue(){
-        return calculateItemsSoldRevenue() - (calculateCashiersSalaries() + calculateDeliveryCosts());
+
+    // Assign a cashier to a register
+    public boolean assignCashier(Cashier cashier,  Register register){
+        if (registers.contains(register)){
+            register.setCashier(cashier);
+            return true;
+        }
+        return false;
     }
+
+     // 1 . Calculate the sum of all the items sold
+    public double calculateItemsSoldRevenue(){
+        double sum = 0;
+        for (Map.Entry<Item, Double> entry: soldItemsList.entrySet()) {
+            sum += entry.getKey().calculateFinalSellingPrice() * entry.getValue();
+        }
+        return sum;
+    }
+    // 2. Calculate the costs for the salaries of the employees
      public double calculateCashiersSalaries(){
          double sum = 0;
          for ( Cashier currentCashier: cashiersList ) {
@@ -35,19 +50,30 @@ public class Store {
          }
          return sum;
      }
+
+
+    // 3. Calculate the sum the delivery will cost
      public double calculateDeliveryCosts(){
          double sum = 0;
-         for (Map.Entry<Item, Integer> entry: soldItemsList.entrySet()) {
+         for (Map.Entry<Item, Double> entry: soldItemsList.entrySet()) {
              sum += entry.getKey().getDeliveryPrice() * entry.getValue();
          }
          return sum;
      }
-    public double calculateItemsSoldRevenue(){
-        double sum = 0;
-        for (Map.Entry<Item, Integer> entry: soldItemsList.entrySet()) {
-            sum += entry.getKey().calculateSellingPrice() * entry.getValue();
+
+     // 4. Calculate the total revenue
+    public double calculateTotalRevenue(){
+        return calculateItemsSoldRevenue() - (calculateCashiersSalaries() + calculateDeliveryCosts());
+    }
+
+
+    // To return how many receipts there have been
+    public int getNumberOfGivenReceipts(){
+        int numReceipts = 0;
+        for (Register register: registers) {
+            numReceipts += register.getReceipts().size();
         }
-        return sum;
+         return numReceipts;
     }
 
 
@@ -63,16 +89,16 @@ public class Store {
         return cashiersList;
     }
 
-    public Map<Item, Integer> getItemsAvailable() {
+    public Map<Item, Double> getItemsAvailable() {
         return itemsAvailable;
     }
 
-    public Map<Item, Integer> getSoldItemsList() {
+    public Map<Item, Double> getSoldItemsList() {
         return soldItemsList;
     }
 
-    public HashSet<Checkout> getReceiptsList() {
-        return receiptsList;
+    public HashSet<Register> getRegisters() {
+        return registers;
     }
 
 
@@ -84,7 +110,7 @@ public class Store {
                 ", cashiersList=" + cashiersList +
                 ", itemsAvailable=" + itemsAvailable +
                 ", soldItemsList=" + soldItemsList +
-                ", receiptsList=" + receiptsList +
+                ", receiptsList=" + registers +
                 '}';
     }
 }

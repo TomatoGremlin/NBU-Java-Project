@@ -1,6 +1,6 @@
 package Store.People;
 
-import Store.Checkout;
+import Store.Register;
 
 import java.util.Objects;
 
@@ -8,13 +8,13 @@ public class Cashier {
     private String name;
     private String idNumber;
     private double monthlySalary;
-    private Checkout checkout;
+    private Register register;
 
-    public Cashier(String name, String idNumber, double monthlySalary, Checkout checkout) {
+    public Cashier(String name, String idNumber, double monthlySalary, Register register) {
         this.name = name;
         this.idNumber = idNumber;
         this.monthlySalary = monthlySalary;
-        this.checkout = checkout;
+        this.register = register;
     }
 
     public String getName() {
@@ -29,8 +29,8 @@ public class Cashier {
         return monthlySalary;
     }
 
-    public Checkout getCheckout() {
-        return checkout;
+    public Register getCheckout() {
+        return register;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class Cashier {
                 "name='" + name + '\'' +
                 ", idNumber='" + idNumber + '\'' +
                 ", monthlySalary=" + monthlySalary +
-                ", checkout=" + checkout +
+                ", checkout=" + register +
                 '}';
     }
 

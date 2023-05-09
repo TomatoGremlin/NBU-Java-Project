@@ -8,9 +8,9 @@ import java.util.Objects;
 
 public class Client {
     private double budget;
-    private Map<Item, Integer> items;
+    private Map<Item, Double> items;
 
-    public Client(double budget, Map<Item, Integer> items) {
+    public Client(double budget, Map<Item, Double> items) {
         this.budget = budget;
         this.items = items;
     }
@@ -19,7 +19,7 @@ public class Client {
         return budget;
     }
 
-    public Map<Item, Integer> getItems() {
+    public Map<Item, Double> getItems() {
         return items;
     }
 

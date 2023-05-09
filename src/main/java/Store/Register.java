@@ -5,31 +5,31 @@ import Store.People.Client;
 import Utils.ioReceipt;
 import exeptions.ItemAmountUnavailableException;
 
-import java.time.LocalDate;
 import java.util.*;
-
-public class Checkout {
+// dostavka, smqtane
+public class Register {
+    private static int num_instances = 0;
+    private int id_number;
     private Cashier cashier;
-    private Queue<LinkedHashSet<Client>> clients ; // queue ( to keep the order of enqueuing) of linked hash set ( to have no repetitions of client )
+    private Queue<Client> clients ; // queue ( to keep the order of enqueuing) of linked hash set ( to have no repetitions of client )
     private HashSet<Receipt> receipts ;// hash set differentiating by id
     private Store store;
 
-    public Checkout(Cashier cashier, List<Client> client, Store store) {
+
+    public Register(Cashier cashier, List<Client> client, Store store) {
         this.cashier = cashier;
-        this.clients = new LinkedList<>();
+        this.clients = new ArrayDeque<>();
         this.receipts = new HashSet<>();
         this.store = store;
     }
 
     // -----  Client Queue operations  -----
     public boolean addClient(Client newClient) {
-        if ( clients.isEmpty() ) {
-            LinkedHashSet<Client> newSet = new LinkedHashSet<>();
-            newSet.add(newClient);
-            return clients.offer(newSet);
-        } else {
-            return clients.peek().add(newClient);
+        if ( !clients.contains(newClient) ) {
+            return clients.add(newClient);
         }
+
+        return false;
     }
 
     public boolean removeClient(Client client) {
@@ -42,8 +42,8 @@ public class Checkout {
     // ----  Making a Transaction operations  -----
 
     // 1. Check if there is enough units of the item the client wants
-    public boolean checkForAvailability(Item item, int itemAmount) {
-        int unitsAvailable = store.getItemsAvailable().get(item) ;
+    public boolean checkForAvailability(Item item, double itemAmount) {
+        Double unitsAvailable = store.getItemsAvailable().get(item) ;
         if (unitsAvailable >= itemAmount){
             return true;
         }
@@ -54,14 +54,14 @@ public class Checkout {
     public double scanItems(Client client) throws ItemAmountUnavailableException {
         double sumOwed = 0;
 
-        for (Map.Entry<Item, Integer> entry: client.getItems( ).entrySet()) {
+        for (Map.Entry<Item, Double> entry: client.getItems( ).entrySet()) {
 
             if (!checkForAvailability( entry.getKey(), entry.getValue() )){
                 throw new ItemAmountUnavailableException( entry.getKey().getName() + " only has "+ entry.getValue() +
                         " when " + entry.getValue() + " are needed", entry.getValue());
             }
 
-            sumOwed += entry.getKey().calculateSellingPrice() * entry.getValue();
+            sumOwed += entry.getKey().calculateFinalSellingPrice() * entry.getValue();
         }
         return sumOwed;
     }
@@ -87,24 +87,27 @@ public class Checkout {
     // 5. Update the store inventory of items that have been sold
     public boolean addItemsToSold(Client client){
 
-        for (Map.Entry<Item, Integer> entry: client.getItems().entrySet()) {
+        for (Map.Entry<Item, Double> entry: client.getItems().entrySet()) {
             Item item = entry.getKey();
-            int quantity = entry.getValue();
+            double quantity = entry.getValue();
 
             if (store.getSoldItemsList().containsKey(item)) {
-                int currentQuantity = store.getSoldItemsList().get(item);
-                int newQuantity = currentQuantity + quantity;
+
+                double currentQuantity = store.getSoldItemsList().get(item);
+                double newQuantity = currentQuantity + quantity;
                 store.getSoldItemsList().put( item, newQuantity );
+
             } else {
                 store.getSoldItemsList().put( item, quantity );
             }
         }
         return true;
     }
+
     // 6.Update the available unites of each item sold
     public boolean removeSoldItemsFromAvailable(Client client){
         for (Item item : client.getItems().keySet()) {
-            int updatedQuantity = store.getItemsAvailable().get(item) - client.getItems().get(item);
+            double updatedQuantity = store.getItemsAvailable().get(item) - client.getItems().get(item);
             store.getItemsAvailable().put( item, updatedQuantity );
         }
         return true;
@@ -115,7 +118,7 @@ public class Checkout {
     public boolean finalizeTransaction(Client client, double sumOwed){
 
         if ( canTransactionPass(client, sumOwed) ){
-            Receipt receipt = new Receipt(cashier, LocalDate.now().atStartOfDay(), client.getItems());
+            Receipt receipt = new Receipt(cashier, client.getItems());
             addReceipt(receipt);
             printReceipt(receipt);
             showReceipt(receipt);
@@ -129,5 +132,22 @@ public class Checkout {
         return false;
     }
 
+
+    public Cashier getCashier() {
+        return cashier;
+    }
+
+    public Queue<Client> getClients() {
+        return clients;
+    }
+
+    public HashSet<Receipt> getReceipts() {
+        return receipts;
+    }
+
+
+    public void setCashier(Cashier cashier) {
+        this.cashier = cashier;
+    }
 }
 
