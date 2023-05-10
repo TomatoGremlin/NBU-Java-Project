@@ -70,7 +70,6 @@ public class Item {
             }
             store.getItemsAvailable().put(this,  units);
 
-
             return true;
         }
         return false;

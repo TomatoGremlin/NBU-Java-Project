@@ -9,7 +9,7 @@ import java.util.*;
 // dostavka, smqtane
 public class Register {
     private static int num_instances = 0;
-    private int id_number;
+    private int registerNumber;
     private Cashier cashier;
     private Queue<Client> clients ; // queue ( to keep the order of enqueuing) of linked hash set ( to have no repetitions of client )
     private HashSet<Receipt> receipts ;// hash set differentiating by id
@@ -17,6 +17,9 @@ public class Register {
 
 
     public Register(Cashier cashier, List<Client> client, Store store) {
+        num_instances++;
+        registerNumber = num_instances;
+
         this.cashier = cashier;
         this.clients = new ArrayDeque<>();
         this.receipts = new HashSet<>();
@@ -148,6 +151,19 @@ public class Register {
 
     public void setCashier(Cashier cashier) {
         this.cashier = cashier;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Register register = (Register) o;
+        return registerNumber == register.registerNumber && Objects.equals(store, register.store);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(registerNumber, store);
     }
 }
 

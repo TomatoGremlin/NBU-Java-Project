@@ -1,6 +1,8 @@
 package Store;
 
 import Store.People.Cashier;
+import exeptions.CashierAlreadyAssignedException;
+import exeptions.RegisterDoesNotExistException;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,12 +28,15 @@ public class Store {
 
 
     // Assign a cashier to a register
-    public boolean assignCashier(Cashier cashier,  Register register){
+    public boolean assignCashier(Cashier cashier,  Register register) throws RegisterDoesNotExistException, CashierAlreadyAssignedException {
         if (registers.contains(register)){
-            register.setCashier(cashier);
-            return true;
+            throw new RegisterDoesNotExistException("The register you have chosen doesn't exist");
         }
-        return false;
+        if ( register.getCashier().equals(cashier) ){
+            throw new CashierAlreadyAssignedException("The cashier you have chosen is already assigned to this register");
+        }
+        register.setCashier(cashier);
+        return true;
     }
 
      // 1 . Calculate the sum of all the items sold
