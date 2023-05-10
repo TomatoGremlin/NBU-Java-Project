@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 public class Store {
+    String name;
     private int daysTillExpirationAllowed;
     private int percentageSale;
     private HashSet<Cashier>cashiersList; // hash set differentiating by id because otherwise it would be by referential
@@ -16,8 +17,13 @@ public class Store {
     private Map<Item, Double> soldItemsList;
     private HashSet<Register> registers;
 
-
-    public Store( int daysTillExpirationAllowed, int percentageSale, HashSet<Cashier> cashiersList, Map<Item, Double> itemsAvailable ) {
+    public Store( String name , int daysTillExpirationAllowed, int percentageSale ) {
+        this.name = name;
+        this.daysTillExpirationAllowed = daysTillExpirationAllowed;
+        this.percentageSale = percentageSale;
+    }
+    public Store( String name , int daysTillExpirationAllowed, int percentageSale, HashSet<Cashier> cashiersList, Map<Item, Double> itemsAvailable ) {
+        this.name = name;
         this.daysTillExpirationAllowed = daysTillExpirationAllowed;
         this.percentageSale = percentageSale;
         this.cashiersList = cashiersList;
@@ -59,11 +65,11 @@ public class Store {
 
     // 3. Calculate the sum the delivery will cost
      public double calculateDeliveryCosts(){
-         double sum = 0;
+         double costs = 0;
          for (Map.Entry<Item, Double> entry: soldItemsList.entrySet()) {
-             sum += entry.getKey().getDeliveryPrice() * entry.getValue();
+             costs += entry.getKey().getDeliveryPrice() * entry.getValue();
          }
-         return sum;
+         return costs;
      }
 
      // 4. Calculate the total revenue

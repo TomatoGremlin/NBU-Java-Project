@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 public class Item {
-    private String idNumber;
+    private final String idNumber;
     private String name;
     private double deliveryPrice;
     private ItemCategory category;
@@ -16,12 +16,13 @@ public class Item {
 
     private Store store;
 
-    public Item(String idNumber, String name, double deliveryPrice, ItemCategory category, LocalDate expirationDate) {
+    public Item(String idNumber, String name,  ItemCategory category, double deliveryPrice, LocalDate expirationDate, Store store) {
         this.idNumber = idNumber;
         this.name = name;
         this.deliveryPrice = deliveryPrice;
         this.category = category;
         this.expirationDate = expirationDate;
+        this.store = store;
     }
 
     // 1. See how many days there are left till expiration of product
@@ -63,6 +64,8 @@ public class Item {
         return true;
     }
 
+    //6. Put in store inventory
+
     public boolean putInAvailable(double units) throws ItemHasExpiredException {
         if (sellItem()){
             if (store.getItemsAvailable().containsKey(this)){
@@ -87,13 +90,7 @@ public class Item {
                 '}';
     }
 
-    public String itemInfoReceipt() {
-        return "" + name + "\t\t\t" +
-                 calculateFinalSellingPrice() +
-                ", expirationDate=" + expirationDate +
-                ", store=" + store +
-                '}';
-    }
+
 
     public String getIdNumber() {
         return idNumber;
