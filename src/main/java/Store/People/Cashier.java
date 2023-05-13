@@ -1,26 +1,36 @@
 package Store.People;
 
 import Store.Register;
+import exeptions.IncorrectSalaryValueException;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 public class Cashier {
     private String name;
     private String idNumber;
-    private double monthlySalary;
+    private BigDecimal monthlySalary;
     private Register register;
 
 
-    public Cashier(String name, String idNumber, double monthlySalary) {
+    public Cashier(String name, String idNumber, BigDecimal monthlySalary) {
         this.name = name;
         this.idNumber = idNumber;
         this.monthlySalary = monthlySalary;
     }
-    public Cashier(String name, String idNumber, double monthlySalary, Register register) {
+    public Cashier(String name, String idNumber, BigDecimal monthlySalary, Register register) {
         this.name = name;
         this.idNumber = idNumber;
         this.monthlySalary = monthlySalary;
         this.register = register;
+    }
+
+    public void setMonthlySalary(BigDecimal monthlySalary) throws IncorrectSalaryValueException {
+        // if salary <= 0
+        if ( monthlySalary.compareTo(BigDecimal.valueOf(0)) != 1){
+            throw new IncorrectSalaryValueException("Cashier's salary should not be a negative number or 0");
+        }
+        this.monthlySalary = monthlySalary;
     }
 
     public String getName() {
@@ -31,11 +41,11 @@ public class Cashier {
         return idNumber;
     }
 
-    public double getMonthlySalary() {
+    public BigDecimal getMonthlySalary() {
         return monthlySalary;
     }
 
-    public Register getCheckout() {
+    public Register getRegister() {
         return register;
     }
 

@@ -1,11 +1,12 @@
 import Store.Item;
 import Store.Store;
 import Store.enums.ItemCategory;
-import exeptions.IncorrectPriceValue;
+import exeptions.IncorrectPriceValueException;
 import exeptions.ItemHasExpiredException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,10 +17,12 @@ class ItemTest {
     int daysTillExpirationAllowed = 5;
 
     @BeforeEach
-    void setUp() {
-        ItemCategory.CONSUMABLE.setPercentageMarkup(10);
+    void setUp() throws IncorrectPriceValueException {
+        //ItemCategory.CONSUMABLE.setPercentageMarkup(10);
         store = new Store("Lidl", daysTillExpirationAllowed, 20 );
-        item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, 100, LocalDate.now().plusDays(10), store);
+        store.setOverchargeByCategory(ItemCategory.CONSUMABLE, BigDecimal.valueOf(10));
+
+        item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, BigDecimal.valueOf(100), LocalDate.now().plusDays(10), store);
     }
 
     @Test
@@ -29,15 +32,15 @@ class ItemTest {
     }
 
     @Test
-    void getDaysTillExpirationZero() {
-        item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, 100, LocalDate.now(), store);
+    void getDaysTillExpirationZero() throws IncorrectPriceValueException {
+        item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, BigDecimal.valueOf(100), LocalDate.now(), store);
         long expected = 0;
         assertEquals( expected, item.getDaysTillExpiration() );
     }
 
     @Test
-    void getDaysTillExpirationNegative() throws IncorrectPriceValue {
-        item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, 100, LocalDate.now().minusDays(1), store);
+    void getDaysTillExpirationNegative() throws IncorrectPriceValueException {
+        item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, BigDecimal.valueOf(100), LocalDate.now().minusDays(1), store);
         long expected = -1;
         assertEquals( expected, item.getDaysTillExpiration() );
     }
@@ -58,8 +61,8 @@ class ItemTest {
 
 
     @Test
-    void calculateFinalSellingPriceWithSale() {
-        item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, 100, LocalDate.now().minusDays(daysTillExpirationAllowed + 1), store);
+    void calculateFinalSellingPriceWithSale() throws IncorrectPriceValueException {
+        item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, BigDecimal.valueOf(100), LocalDate.now().minusDays(daysTillExpirationAllowed + 1), store);
 
         double expected = 88;
         assertEquals( expected, item.calculateFinalSellingPrice() );
@@ -71,21 +74,21 @@ class ItemTest {
     }
 
     @Test
-    void hasExpiredYes() {
-        item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, 100, LocalDate.now().minusDays(1), store);
+    void hasExpiredYes() throws IncorrectPriceValueException {
+        item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, BigDecimal.valueOf(100), LocalDate.now().minusDays(1), store);
         assertTrue(item.hasExpired());
     }
 
     @Test
-    void isSellableYes() throws ItemHasExpiredException {
+    void isSellableYes()  {
         assertTrue(item.isSellable());
     }
 
     @Test
-    void isSellableNo() throws ItemHasExpiredException {
-        item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, 100, LocalDate.now().minusDays(1), store);
+    void isSellableNo() throws IncorrectPriceValueException {
+        item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, BigDecimal.valueOf(100), LocalDate.now().minusDays(1), store);
 
-        assertThrows(ItemHasExpiredException.class, ()->item.isSellable());
+        assertFalse(item.isSellable());
     }
 
     @Test
@@ -94,8 +97,8 @@ class ItemTest {
     }
 
     @Test
-    void putInAvailableExpired() throws ItemHasExpiredException {
-        item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, 100, LocalDate.now().minusDays(1), store);
+    void putInAvailableExpired() throws ItemHasExpiredException, IncorrectPriceValueException {
+        item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, BigDecimal.valueOf(100), LocalDate.now().minusDays(1), store);
 
         assertThrows(ItemHasExpiredException.class, ()->item.putInAvailable(7));
     }

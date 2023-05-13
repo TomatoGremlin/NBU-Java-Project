@@ -1,26 +1,23 @@
 package Store;
 
 import Store.People.Cashier;
-import exeptions.ItemAmountUnavailableException;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class Receipt {
     private static int num_instances = 0;
-    private int id_number;
+    private final int id_number;
     private Cashier cashier;
     private LocalDateTime dateTime;
     private Map<Item, Double> itemsBought ;
 
 
 
-    public Receipt(Cashier cashier, Map<Item, Double> itemsBoughtList) {
+    public Receipt( Cashier cashier, Map<Item, Double> itemsBoughtList ) {
         num_instances++;
         this.id_number = num_instances;
         this.cashier = cashier;
@@ -28,10 +25,15 @@ public class Receipt {
         this.itemsBought = itemsBoughtList;
     }
 
-    public double getTotalSumOfItems() {
-        double sum = 0;
+    public BigDecimal getTotalSumOfItems() {
+        BigDecimal sum = BigDecimal.valueOf(0);
+
         for (Map.Entry<Item, Double> entry: itemsBought.entrySet()) {
-            sum += entry.getKey().calculateFinalSellingPrice() * entry.getValue();
+            BigDecimal price = entry.getKey().calculateFinalSellingPrice();
+            BigDecimal unites = BigDecimal.valueOf( entry.getValue()  );
+
+            //  sum += entry.getKey().calculateFinalSellingPrice() * entry.getValue();
+            sum = sum.add( price.multiply( price.multiply( unites )  ) ) ;
         }
         return sum;
     }
@@ -62,6 +64,8 @@ public class Receipt {
         StringBuilder receiptBuilder = new StringBuilder();
 
         // Receipt header
+        receiptBuilder.append(cashier.getRegister().getStore().getName()).append("\n");
+
         receiptBuilder.append("Customer Receipt Copy").append("\n");
         receiptBuilder.append("Receipt ID: ").append(id_number).append("\n");
         receiptBuilder.append("Cashier: ").append(cashier.getName()).append("\n");
@@ -74,7 +78,7 @@ public class Receipt {
             Item item = entry.getKey();
             double quantity = entry.getValue();
             receiptBuilder.append("- ").append(item.getName()).append("\t\t").append(quantity).append("\n");
-            receiptBuilder.append(item.calculateFinalSellingPrice()).append("\n");
+            receiptBuilder.append( item.calculateFinalSellingPrice() ).append("\n");
         }
 
         receiptBuilder.append("=======================================================");

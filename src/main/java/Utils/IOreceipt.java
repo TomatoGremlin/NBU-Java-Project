@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ioReceipt {
+public class IOreceipt {
     public static void writeReceipt(String outputFile, Receipt bill){
 
         try(FileWriter fout = new FileWriter( new File( outputFile ), true)  ){

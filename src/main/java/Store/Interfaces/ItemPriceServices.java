@@ -1,8 +1,10 @@
 package Store.Interfaces;
 
+import java.math.BigDecimal;
+
 public interface ItemPriceServices {
-    public double calculatePrice();
-    public double calculateFinalSellingPrice();
+    public BigDecimal calculatePrice();
+    public BigDecimal calculateFinalSellingPrice();
 }
 
 

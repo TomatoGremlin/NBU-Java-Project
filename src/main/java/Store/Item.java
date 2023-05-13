@@ -3,8 +3,10 @@ package Store;
 import Store.Interfaces.DeliveryServices;
 import Store.Interfaces.ItemPriceServices;
 import Store.enums.ItemCategory;
+import exeptions.IncorrectPriceValueException;
 import exeptions.ItemHasExpiredException;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -12,20 +14,28 @@ import java.util.Objects;
 public class Item implements DeliveryServices, ItemPriceServices {
     private final String idNumber;
     private String name;
-    private double deliveryPrice;
+    private BigDecimal deliveryPrice;
     private ItemCategory category;
     private LocalDate expirationDate;
 
     private Store store;
 
-    public Item(String idNumber, String name,  ItemCategory category, double deliveryPrice, LocalDate expirationDate, Store store) {
+    public Item(String idNumber, String name,  ItemCategory category, BigDecimal deliveryPrice, LocalDate expirationDate, Store store) throws IncorrectPriceValueException {
 
         this.idNumber = idNumber;
         this.name = name;
-        this.deliveryPrice = deliveryPrice;
+        setDeliveryPrice( deliveryPrice );
         this.category = category;
         this.expirationDate = expirationDate;
         this.store = store;
+    }
+
+    public void setDeliveryPrice(BigDecimal deliveryPrice) throws IncorrectPriceValueException {
+        //deliveryPrice <= 0
+        if ( deliveryPrice.compareTo( BigDecimal.valueOf(0) ) != 1 ){
+            throw new IncorrectPriceValueException("The delivery price of an item should not be negative or 0");
+        }
+        this.deliveryPrice = deliveryPrice;
     }
 
     // 1. See how many days there are left till expiration of product
@@ -39,17 +49,22 @@ public class Item implements DeliveryServices, ItemPriceServices {
 
     // 2. Calculate the price the item depending on whether it's consumable or not
     @Override
-    public double calculatePrice() {
-        return deliveryPrice + ( deliveryPrice * store.getOverchargeByCategory().get(this.category) ) / 100;
+    public BigDecimal calculatePrice() {
+        //  deliveryPrice + ( deliveryPrice * itemOvercharge ) / 100 ;
+        BigDecimal itemOvercharge = store.getOverchargeByCategory(this.category);
+        return deliveryPrice.add ( deliveryPrice.multiply(itemOvercharge) ).divide( BigDecimal.valueOf(100) );
     }
 
     // 3. Calculate the price the item will sell for (adjust if the expiration is near)
     @Override
-    public double calculateFinalSellingPrice(){
-        double sellingPrice = calculatePrice();
+    public BigDecimal calculateFinalSellingPrice(){
+        BigDecimal sellingPrice = calculatePrice();
 
         if (getDaysTillExpiration() < store.getDaysTillExpirationAllowed()){
-            return sellingPrice - ( sellingPrice * store.getPercentageSale()) / 100;
+            BigDecimal sale = BigDecimal.valueOf( store.getPercentageSale() ) ;
+
+            //   sellingPrice - ( sellingPrice * sale ) / 100;
+            return sellingPrice.subtract ( sellingPrice.multiply(sale)  ).divide( BigDecimal.valueOf(100) ) ;
         }
         return sellingPrice;
     }
@@ -65,9 +80,9 @@ public class Item implements DeliveryServices, ItemPriceServices {
 
     // 5. Sell if it has not, do not sell if it has
     @Override
-    public boolean isSellable()throws ItemHasExpiredException {
+    public boolean isSellable() {
         if(hasExpired()){
-            throw new ItemHasExpiredException("Item cannot be sold because it has expired");
+            return false;
         }
         return true;
     }
@@ -76,16 +91,15 @@ public class Item implements DeliveryServices, ItemPriceServices {
 
     @Override
     public boolean putInAvailable(double units) throws ItemHasExpiredException {
-
-        if (isSellable()){
-            if (store.getItemsAvailable().containsKey(this)){
-                units += store.getItemsAvailable().get(this);
-            }
-            store.getItemsAvailable().put(this,  units);
-
-            return true;
+        if (!isSellable()){
+            throw new ItemHasExpiredException("Item cannot be sold because it has expired");
         }
-        return false;
+
+        if (store.getItemsAvailable().containsKey(this)){
+            units += store.getItemsAvailable().get(this);
+        }
+        store.getItemsAvailable().put(this,  units);
+        return true;
     }
 
 
@@ -104,7 +118,6 @@ public class Item implements DeliveryServices, ItemPriceServices {
     }
 
 
-
     public String getIdNumber() {
         return idNumber;
     }
@@ -113,7 +126,7 @@ public class Item implements DeliveryServices, ItemPriceServices {
         return name;
     }
 
-    public double getDeliveryPrice() {
+    public BigDecimal getDeliveryPrice() {
         return deliveryPrice;
     }
 

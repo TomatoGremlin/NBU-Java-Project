@@ -4,9 +4,11 @@ import Store.Register;
 import Store.People.Cashier;
 import Store.Store;
 import Store.enums.ItemCategory;
+import exeptions.IncorrectPriceValueException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,22 +24,22 @@ class StoreTest {
 
 
     @BeforeEach
-    void setUp() {
-        ItemCategory.CONSUMABLE.setPercentageMarkup(10);
+    void setUp() throws IncorrectPriceValueException {
+        //ItemCategory.CONSUMABLE.setPercentageMarkup(10);
         store = new Store("Lidl", daysTillExpirationAllowed, 20  );
 
-        Item item1 = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, 100, LocalDate.now().plusDays(10), store);
-        Item item2 = new Item("A2", "Jam",  ItemCategory.CONSUMABLE, 100, LocalDate.now().plusDays(10), store);
-        Item item3 = new Item("A3", "Bread",  ItemCategory.CONSUMABLE, 100, LocalDate.now().plusDays(10), store);
+        Item item1 = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, BigDecimal.valueOf(100), LocalDate.now().plusDays(10), store);
+        Item item2 = new Item("A2", "Jam",  ItemCategory.CONSUMABLE, BigDecimal.valueOf(100), LocalDate.now().plusDays(10), store);
+        Item item3 = new Item("A3", "Bread",  ItemCategory.CONSUMABLE, BigDecimal.valueOf(100), LocalDate.now().plusDays(10), store);
 
-         Map<Item, Double> items = new HashMap<Item, Double>();
+        Map<Item, Double> items = new HashMap<Item, Double>();
         items.put(item1, 2.0);
         items.put(item2, 2.0);
         items.put(item3, 2.0);
 
-        Cashier cashier1 = new Cashier("Bob", "C1", 1500);
-        Cashier cashier2 = new Cashier("Bob", "C2", 1500);
-        Cashier cashier3 = new Cashier("Bob", "C3", 1500);
+        Cashier cashier1 = new Cashier("Bob", "C1", BigDecimal.valueOf(1500));
+        Cashier cashier2 = new Cashier("Bob", "C2", BigDecimal.valueOf(1500));
+        Cashier cashier3 = new Cashier("Bob", "C3", BigDecimal.valueOf(1500));
 
         cashiers = new HashSet<>();
         cashiers.add(cashier1);
@@ -53,13 +55,25 @@ class StoreTest {
         registers.add(register3);
 
 
-        store = new Store("Lidl", daysTillExpirationAllowed, 20, cashiers , items, items, registers  );
+        store = new Store("Lidl", daysTillExpirationAllowed, 20, cashiers , items, items, registers );
+        store.setOverchargeByCategory(ItemCategory.CONSUMABLE, BigDecimal.valueOf(10));
     }
 
     @Test
     void assignCashier() {
 
     }
+    @Test
+    void assignCashierRegisterUnavailable() {
+
+    }
+
+    @Test
+    void assignCashierUnavailable() {
+
+    }
+
+
 
     @Test
     void calculateItemsSoldRevenue() {
