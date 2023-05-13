@@ -47,7 +47,7 @@ class ItemTest {
 
     @Test
     void calculatePrice() {
-        double expected = 110;
+        BigDecimal expected = BigDecimal.valueOf( 110 );
         assertEquals(expected, item.calculatePrice());
     }
 
@@ -55,7 +55,7 @@ class ItemTest {
 
     @Test
     void calculateFinalSellingPriceNoSale() {
-        double expected = 110;
+        BigDecimal expected = BigDecimal.valueOf( 110 );
         assertEquals( expected, item.calculateFinalSellingPrice() );
     }
 
@@ -64,7 +64,7 @@ class ItemTest {
     void calculateFinalSellingPriceWithSale() throws IncorrectPriceValueException {
         item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, BigDecimal.valueOf(100), LocalDate.now().minusDays(daysTillExpirationAllowed + 1), store);
 
-        double expected = 88;
+        BigDecimal expected = BigDecimal.valueOf( 88 );
         assertEquals( expected, item.calculateFinalSellingPrice() );
     }
 
@@ -93,13 +93,13 @@ class ItemTest {
 
     @Test
     void putInAvailable() throws ItemHasExpiredException {
-        assertTrue(item.putInAvailable(7));
+        assertTrue(item.putInAvailable(BigDecimal.valueOf(7)));
     }
 
     @Test
     void putInAvailableExpired() throws ItemHasExpiredException, IncorrectPriceValueException {
         item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, BigDecimal.valueOf(100), LocalDate.now().minusDays(1), store);
 
-        assertThrows(ItemHasExpiredException.class, ()->item.putInAvailable(7));
+        assertThrows(ItemHasExpiredException.class, ()->item.putInAvailable(BigDecimal.valueOf( 7 )) );
     }
 }

@@ -13,11 +13,11 @@ public class Receipt {
     private final int id_number;
     private Cashier cashier;
     private LocalDateTime dateTime;
-    private Map<Item, Double> itemsBought ;
+    private Map<Item, BigDecimal> itemsBought ;
 
 
 
-    public Receipt( Cashier cashier, Map<Item, Double> itemsBoughtList ) {
+    public Receipt( Cashier cashier, Map<Item, BigDecimal> itemsBoughtList ) {
         num_instances++;
         this.id_number = num_instances;
         this.cashier = cashier;
@@ -28,9 +28,9 @@ public class Receipt {
     public BigDecimal getTotalSumOfItems() {
         BigDecimal sum = BigDecimal.valueOf(0);
 
-        for (Map.Entry<Item, Double> entry: itemsBought.entrySet()) {
+        for (Map.Entry<Item, BigDecimal> entry: itemsBought.entrySet()) {
             BigDecimal price = entry.getKey().calculateFinalSellingPrice();
-            BigDecimal unites = BigDecimal.valueOf( entry.getValue()  );
+            BigDecimal unites = entry.getValue() ;
 
             //  sum += entry.getKey().calculateFinalSellingPrice() * entry.getValue();
             sum = sum.add( price.multiply( price.multiply( unites )  ) ) ;
@@ -55,7 +55,7 @@ public class Receipt {
         return dateTime;
     }
 
-    public Map<Item, Double> getItemsBought() {
+    public Map<Item, BigDecimal> getItemsBought() {
         return itemsBought;
     }
 
@@ -74,9 +74,9 @@ public class Receipt {
         receiptBuilder.append("=======================================================");
         // Receipt items
         receiptBuilder.append("Items Bought:\n");
-        for (Map.Entry<Item, Double> entry : itemsBought.entrySet()) {
+        for (Map.Entry<Item, BigDecimal> entry : itemsBought.entrySet()) {
             Item item = entry.getKey();
-            double quantity = entry.getValue();
+            BigDecimal quantity = entry.getValue();
             receiptBuilder.append("- ").append(item.getName()).append("\t\t").append(quantity).append("\n");
             receiptBuilder.append( item.calculateFinalSellingPrice() ).append("\n");
         }

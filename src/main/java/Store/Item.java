@@ -51,8 +51,8 @@ public class Item implements DeliveryServices, ItemPriceServices {
     @Override
     public BigDecimal calculatePrice() {
         //  deliveryPrice + ( deliveryPrice * itemOvercharge ) / 100 ;
-        BigDecimal itemOvercharge = store.getOverchargeByCategory(this.category);
-        return deliveryPrice.add ( deliveryPrice.multiply(itemOvercharge) ).divide( BigDecimal.valueOf(100) );
+        BigDecimal itemOvercharge = store.getOverchargeByCategory(category);
+        return deliveryPrice.add ( (deliveryPrice.multiply(itemOvercharge) ).divide( BigDecimal.valueOf(100) ) );
     }
 
     // 3. Calculate the price the item will sell for (adjust if the expiration is near)
@@ -90,13 +90,13 @@ public class Item implements DeliveryServices, ItemPriceServices {
     //6. Put in store inventory
 
     @Override
-    public boolean putInAvailable(double units) throws ItemHasExpiredException {
+    public boolean putInAvailable(BigDecimal units) throws ItemHasExpiredException {
         if (!isSellable()){
             throw new ItemHasExpiredException("Item cannot be sold because it has expired");
         }
 
         if (store.getItemsAvailable().containsKey(this)){
-            units += store.getItemsAvailable().get(this);
+            units = units.add( store.getItemsAvailable().get(this)  );
         }
         store.getItemsAvailable().put(this,  units);
         return true;

@@ -18,6 +18,7 @@ public class Cashier {
         this.idNumber = idNumber;
         this.monthlySalary = monthlySalary;
     }
+
     public Cashier(String name, String idNumber, BigDecimal monthlySalary, Register register) {
         this.name = name;
         this.idNumber = idNumber;
@@ -27,7 +28,7 @@ public class Cashier {
 
     public void setMonthlySalary(BigDecimal monthlySalary) throws IncorrectSalaryValueException {
         // if salary <= 0
-        if ( monthlySalary.compareTo(BigDecimal.valueOf(0)) != 1){
+        if (monthlySalary.compareTo(BigDecimal.valueOf(0)) != 1) {
             throw new IncorrectSalaryValueException("Cashier's salary should not be a negative number or 0");
         }
         this.monthlySalary = monthlySalary;
@@ -47,6 +48,10 @@ public class Cashier {
 
     public Register getRegister() {
         return register;
+    }
+
+    public void setRegister(Register register) {
+        this.register = register;
     }
 
     @Override
@@ -70,9 +75,5 @@ public class Cashier {
     @Override
     public int hashCode() {
         return Objects.hash(idNumber);
-    }
-
-    public void setRegister(Register register) {
-        this.register = register;
     }
 }

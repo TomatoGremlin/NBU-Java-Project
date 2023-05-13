@@ -10,9 +10,9 @@ import java.util.Objects;
 
 public class Client {
     private BigDecimal budget;
-    private Map<Item, Double> items;
+    private Map<Item, BigDecimal> items;
 
-    public Client(BigDecimal budget, Map<Item, Double> items) {
+    public Client(BigDecimal budget, Map<Item, BigDecimal> items) {
         this.budget = budget;
         this.items = items;
     }
@@ -29,7 +29,7 @@ public class Client {
         return budget;
     }
 
-    public Map<Item, Double> getItems() {
+    public Map<Item, BigDecimal> getItems() {
         return items;
     }
 

@@ -8,24 +8,21 @@ import exeptions.CashierUnavailableException;
 import exeptions.RegisterUnavailableException;
 
 import java.math.BigDecimal;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public class Store implements RevenueServices, CashierServices {
     private String name;
     private int daysTillExpirationAllowed;
     private int percentageSale;
     private HashSet<Cashier> cashiersList; // hash set differentiating by id because otherwise it would be by referential
-    private Map<Item, Double> itemsAvailable;
-    private Map<Item, Double> soldItemsList;
+    private Map<Item, BigDecimal> itemsAvailable;
+    private Map<Item, BigDecimal> soldItemsList;
     private HashSet<Register> registers;
 
     private EnumMap<ItemCategory, BigDecimal> overchargeByCategory;
 
 
-    public Store(String name, int daysTillExpirationAllowed, int percentageSale, HashSet<Cashier> cashiersList, Map<Item, Double> itemsAvailable, Map<Item, Double> soldItemsList, HashSet<Register> registers) {
+    public Store(String name, int daysTillExpirationAllowed, int percentageSale, HashSet<Cashier> cashiersList, Map<Item, BigDecimal> itemsAvailable, Map<Item, BigDecimal> soldItemsList, HashSet<Register> registers) {
         this.name = name;
         this.daysTillExpirationAllowed = daysTillExpirationAllowed;
         this.percentageSale = percentageSale;
@@ -44,7 +41,7 @@ public class Store implements RevenueServices, CashierServices {
         this.itemsAvailable = new HashMap<>();
         this.overchargeByCategory = new EnumMap<>(ItemCategory.class);
     }
-    public Store( String name , int daysTillExpirationAllowed, int percentageSale, HashSet<Cashier> cashiersList, Map<Item, Double> itemsAvailable ) {
+    public Store( String name , int daysTillExpirationAllowed, int percentageSale, HashSet<Cashier> cashiersList, Map<Item, BigDecimal> itemsAvailable ) {
         this.name = name;
         this.daysTillExpirationAllowed = daysTillExpirationAllowed;
         this.percentageSale = percentageSale;
@@ -56,7 +53,7 @@ public class Store implements RevenueServices, CashierServices {
         this.overchargeByCategory = new EnumMap<>(ItemCategory.class);
     }
 
-    public Store( String name, int daysTillExpirationAllowed, int percentageSale,  Map<Item, Double> soldItemsList ) {
+    public Store( String name, int daysTillExpirationAllowed, int percentageSale,  Map<Item, BigDecimal> soldItemsList ) {
         this.name = name;
         this.daysTillExpirationAllowed = daysTillExpirationAllowed;
         this.percentageSale = percentageSale;
@@ -81,10 +78,10 @@ public class Store implements RevenueServices, CashierServices {
     // Assign a cashier to a register
     @Override
     public boolean assignCashier(Cashier cashier,  Register register) throws RegisterUnavailableException, CashierUnavailableException {
-        if (registers.contains(register)){
+        if (!registers.contains(register)){
             throw new RegisterUnavailableException("The register you have chosen is unavailable");
         }
-        if ( register.getCashier().equals(cashier) ){
+        if ( !cashiersList.contains(cashier) ){
             throw new CashierUnavailableException("The cashier you have chosen is unavailable");
         }
         if ( !register.getCashier().equals(cashier) ){
@@ -99,9 +96,9 @@ public class Store implements RevenueServices, CashierServices {
      public BigDecimal calculateItemsSoldRevenue(){
         BigDecimal revenue = BigDecimal.valueOf(0);
 
-        for (Map.Entry<Item, Double> entry: soldItemsList.entrySet()) {
+        for (Map.Entry<Item, BigDecimal> entry: soldItemsList.entrySet()) {
             BigDecimal itemPrice = entry.getKey().calculateFinalSellingPrice();
-            BigDecimal itemUnites = BigDecimal.valueOf( entry.getValue() );
+            BigDecimal itemUnites =  entry.getValue() ;
 
             //   revenue += entry.getKey().calculateFinalSellingPrice() * entry.getValue();
             revenue = revenue.add( itemPrice.multiply( itemUnites ) ) ;
@@ -127,9 +124,9 @@ public class Store implements RevenueServices, CashierServices {
     public BigDecimal calculateDeliveryCosts(){
          BigDecimal costs = BigDecimal.valueOf(0);
 
-         for (Map.Entry<Item, Double> entry: soldItemsList.entrySet()) {
+         for (Map.Entry<Item, BigDecimal> entry: soldItemsList.entrySet()) {
              BigDecimal deliveryPrice =  entry.getKey().getDeliveryPrice();
-             BigDecimal itemUnites = BigDecimal.valueOf(  entry.getValue()  );
+             BigDecimal itemUnites =  entry.getValue() ;
 
              //   costs += entry.getKey().getDeliveryPrice() * entry.getValue();
              costs = costs.add( deliveryPrice.multiply( itemUnites )  );
@@ -164,11 +161,11 @@ public class Store implements RevenueServices, CashierServices {
         return cashiersList;
     }
 
-    public Map<Item, Double> getItemsAvailable() {
+    public Map<Item, BigDecimal> getItemsAvailable() {
         return itemsAvailable;
     }
 
-    public Map<Item, Double> getSoldItemsList() {
+    public Map<Item, BigDecimal> getSoldItemsList() {
         return soldItemsList;
     }
 
@@ -178,6 +175,10 @@ public class Store implements RevenueServices, CashierServices {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -190,5 +191,18 @@ public class Store implements RevenueServices, CashierServices {
                 ", soldItemsList=" + soldItemsList +
                 ", receiptsList=" + registers +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Store store = (Store) o;
+        return daysTillExpirationAllowed == store.daysTillExpirationAllowed && percentageSale == store.percentageSale && Objects.equals(name, store.name) && Objects.equals(cashiersList, store.cashiersList) && Objects.equals(itemsAvailable, store.itemsAvailable) && Objects.equals(soldItemsList, store.soldItemsList) && Objects.equals(registers, store.registers) && Objects.equals(overchargeByCategory, store.overchargeByCategory);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, daysTillExpirationAllowed, percentageSale, cashiersList, itemsAvailable, soldItemsList, registers, overchargeByCategory);
     }
 }

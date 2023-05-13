@@ -63,12 +63,13 @@ public class Register implements TransactionServices, ClientQueueServices, Recei
 
     // 1. Check if there is enough units of the item the client wants
     @Override
-    public boolean checkForAvailability(Item item, double itemAmount) {
-        Double unitsAvailable = store.getItemsAvailable().get(item) ;
-        if (unitsAvailable >= itemAmount){
-            return true;
+    public boolean checkForAvailability(Item item, BigDecimal itemAmount) {
+        BigDecimal unitsAvailable = store.getItemsAvailable().get(item) ;
+        //         if (unitsAvailable < itemAmount)
+        if (unitsAvailable.compareTo(itemAmount) == -1){
+            return false;
         }
-        return false;
+        return true;
     }
 
     // 2. Calculate the sum of the transaction - throw exception if one of the items has less than enough units
@@ -83,7 +84,7 @@ public class Register implements TransactionServices, ClientQueueServices, Recei
     public BigDecimal scanItems(Client client) throws ItemAmountUnavailableException, ItemHasExpiredException {
         BigDecimal sumOwed = BigDecimal.valueOf(0);
 
-        for (Map.Entry<Item, Double> entry: client.getItems( ).entrySet()) {
+        for (Map.Entry<Item, BigDecimal> entry: client.getItems( ).entrySet()) {
 
             if (!checkForAvailability( entry.getKey(), entry.getValue() )){
                 throw new ItemAmountUnavailableException( entry.getKey().getName() + " only has " + entry.getValue() +
@@ -95,7 +96,7 @@ public class Register implements TransactionServices, ClientQueueServices, Recei
             }
 
             BigDecimal price = entry.getKey().calculateFinalSellingPrice();
-            BigDecimal unites = BigDecimal.valueOf( entry.getValue() );
+            BigDecimal unites =  entry.getValue() ;
 
             sumOwed = sumOwed.add(  price.multiply( unites )  );
         }
@@ -126,14 +127,14 @@ public class Register implements TransactionServices, ClientQueueServices, Recei
     @Override
     public boolean addItemsToSold(Client client){
 
-        for (Map.Entry<Item, Double> entry: client.getItems().entrySet()) {
+        for (Map.Entry<Item, BigDecimal> entry: client.getItems().entrySet()) {
             Item item = entry.getKey();
-            double quantity = entry.getValue();
+            BigDecimal quantity = entry.getValue();
 
             if (store.getSoldItemsList().containsKey(item)) {
 
-                double currentQuantity = store.getSoldItemsList().get(item);
-                double newQuantity = currentQuantity + quantity;
+                BigDecimal currentQuantity = store.getSoldItemsList().get(item);
+                BigDecimal newQuantity = currentQuantity.add( quantity );
 
                 store.getSoldItemsList().put( item, newQuantity );
             } else {
@@ -147,7 +148,7 @@ public class Register implements TransactionServices, ClientQueueServices, Recei
     @Override
     public boolean removeSoldItemsFromAvailable(Client client){
         for (Item item : client.getItems().keySet()) {
-            double updatedQuantity = store.getItemsAvailable().get(item) - client.getItems().get(item);
+            BigDecimal updatedQuantity = store.getItemsAvailable().get(item).subtract(  client.getItems().get(item)  )  ;
             store.getItemsAvailable().put( item, updatedQuantity );
         }
         return true;
@@ -196,6 +197,7 @@ public class Register implements TransactionServices, ClientQueueServices, Recei
     public void setCashier(Cashier cashier) {
         this.cashier = cashier;
     }
+
 
     @Override
     public boolean equals(Object o) {

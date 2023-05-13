@@ -2,8 +2,8 @@ package exeptions;
 
 public class ItemAmountUnavailableException extends Exception {
 
-    double availableAmount;
-    public ItemAmountUnavailableException(String message, Double availableAmount) {
+    BigDecimal availableAmount;
+    public ItemAmountUnavailableException(String message, BigDecimal availableAmount) {
         super(message);
         this.availableAmount = availableAmount;
     }
