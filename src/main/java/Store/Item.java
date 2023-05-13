@@ -1,5 +1,7 @@
 package Store;
 
+import Store.Interfaces.DeliveryServices;
+import Store.Interfaces.ItemPriceServices;
 import Store.enums.ItemCategory;
 import exeptions.ItemHasExpiredException;
 
@@ -7,7 +9,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class Item {
+public class Item implements DeliveryServices, ItemPriceServices {
     private final String idNumber;
     private String name;
     private double deliveryPrice;
@@ -17,6 +19,7 @@ public class Item {
     private Store store;
 
     public Item(String idNumber, String name,  ItemCategory category, double deliveryPrice, LocalDate expirationDate, Store store) {
+
         this.idNumber = idNumber;
         this.name = name;
         this.deliveryPrice = deliveryPrice;
@@ -29,16 +32,19 @@ public class Item {
     public long getDaysTillExpiration(){
         Duration duration = Duration.between( LocalDate.now().atStartOfDay(), expirationDate.atStartOfDay() );
         long remainingDays = duration.toDays();
+
         return remainingDays;
     }
 
 
     // 2. Calculate the price the item depending on whether it's consumable or not
+    @Override
     public double calculatePrice() {
-        return deliveryPrice + ( deliveryPrice * category.getPercentageMarkup() ) / 100;
+        return deliveryPrice + ( deliveryPrice * store.getOverchargeByCategory().get(this.category) ) / 100;
     }
 
     // 3. Calculate the price the item will sell for (adjust if the expiration is near)
+    @Override
     public double calculateFinalSellingPrice(){
         double sellingPrice = calculatePrice();
 
@@ -49,6 +55,7 @@ public class Item {
     }
 
     // 4. Check if it has already expired
+    @Override
     public boolean hasExpired(){
         if(getDaysTillExpiration() < 0) {
             return true;
@@ -57,7 +64,8 @@ public class Item {
     }
 
     // 5. Sell if it has not, do not sell if it has
-    public boolean sellItem()throws ItemHasExpiredException {
+    @Override
+    public boolean isSellable()throws ItemHasExpiredException {
         if(hasExpired()){
             throw new ItemHasExpiredException("Item cannot be sold because it has expired");
         }
@@ -66,8 +74,10 @@ public class Item {
 
     //6. Put in store inventory
 
+    @Override
     public boolean putInAvailable(double units) throws ItemHasExpiredException {
-        if (sellItem()){
+
+        if (isSellable()){
             if (store.getItemsAvailable().containsKey(this)){
                 units += store.getItemsAvailable().get(this);
             }
@@ -77,6 +87,9 @@ public class Item {
         }
         return false;
     }
+
+
+
 
     @Override
     public String toString() {

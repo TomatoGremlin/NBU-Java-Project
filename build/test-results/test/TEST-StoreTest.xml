@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="StoreTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-05-11T10:57:55" hostname="LAPTOP-RB8RELHE" time="0.045">
+  <properties/>
+  <testcase name="getNumberOfGivenReceiptsZero()" classname="StoreTest" time="0.045"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

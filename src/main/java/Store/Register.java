@@ -15,6 +15,15 @@ public class Register {
     private HashSet<Receipt> receipts ;// hash set differentiating by id
     private Store store;
 
+    public Register(Cashier cashier, Store store) {
+        num_instances++;
+        registerNumber = num_instances;
+
+        this.cashier = cashier;
+        this.clients = new ArrayDeque<>();
+        this.receipts = new HashSet<>();
+        this.store = store;
+    }
 
     public Register(Cashier cashier, List<Client> client, Store store) {
         num_instances++;

@@ -10,6 +10,12 @@ public class Cashier {
     private double monthlySalary;
     private Register register;
 
+
+    public Cashier(String name, String idNumber, double monthlySalary) {
+        this.name = name;
+        this.idNumber = idNumber;
+        this.monthlySalary = monthlySalary;
+    }
     public Cashier(String name, String idNumber, double monthlySalary, Register register) {
         this.name = name;
         this.idNumber = idNumber;
@@ -54,5 +60,9 @@ public class Cashier {
     @Override
     public int hashCode() {
         return Objects.hash(idNumber);
+    }
+
+    public void setRegister(Register register) {
+        this.register = register;
     }
 }
