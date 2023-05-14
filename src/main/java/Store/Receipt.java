@@ -5,6 +5,7 @@ import Store.People.Cashier;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -23,6 +24,15 @@ public class Receipt {
         this.cashier = cashier;
         this.dateTime = LocalDateTime.now();
         this.itemsBought = itemsBoughtList;
+    }
+
+    //empty
+    public Receipt( Cashier cashier ) {
+        num_instances++;
+        this.id_number = num_instances;
+        this.cashier = cashier;
+        this.dateTime = LocalDateTime.now();
+        this.itemsBought = new HashMap<>();
     }
 
     public BigDecimal getTotalSumOfItems() {

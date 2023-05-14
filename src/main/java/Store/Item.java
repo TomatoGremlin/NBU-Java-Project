@@ -142,6 +142,9 @@ public class Item implements DeliveryServices, ItemPriceServices {
         return store;
     }
 
+    public void setStore(Store store) {
+        this.store = store;
+    }
 
     @Override
     public boolean equals(Object o) {

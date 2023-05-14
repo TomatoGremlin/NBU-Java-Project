@@ -21,7 +21,7 @@ public class Store implements RevenueServices, CashierServices {
 
     private EnumMap<ItemCategory, BigDecimal> overchargeByCategory;
 
-
+    //input everything
     public Store(String name, int daysTillExpirationAllowed, int percentageSale, HashSet<Cashier> cashiersList, Map<Item, BigDecimal> itemsAvailable, Map<Item, BigDecimal> soldItemsList, HashSet<Register> registers) {
         this.name = name;
         this.daysTillExpirationAllowed = daysTillExpirationAllowed;
@@ -34,13 +34,8 @@ public class Store implements RevenueServices, CashierServices {
         this.overchargeByCategory = new EnumMap<>(ItemCategory.class);
     }
 
-    public Store(String name , int daysTillExpirationAllowed, int percentageSale ) {
-        this.name = name;
-        this.daysTillExpirationAllowed = daysTillExpirationAllowed;
-        this.percentageSale = percentageSale;
-        this.itemsAvailable = new HashMap<>();
-        this.overchargeByCategory = new EnumMap<>(ItemCategory.class);
-    }
+
+    // input available items + cashiers
     public Store( String name , int daysTillExpirationAllowed, int percentageSale, HashSet<Cashier> cashiersList, Map<Item, BigDecimal> itemsAvailable ) {
         this.name = name;
         this.daysTillExpirationAllowed = daysTillExpirationAllowed;
@@ -53,13 +48,30 @@ public class Store implements RevenueServices, CashierServices {
         this.overchargeByCategory = new EnumMap<>(ItemCategory.class);
     }
 
+    // input list of sold items
     public Store( String name, int daysTillExpirationAllowed, int percentageSale,  Map<Item, BigDecimal> soldItemsList ) {
         this.name = name;
         this.daysTillExpirationAllowed = daysTillExpirationAllowed;
         this.percentageSale = percentageSale;
         this.soldItemsList = soldItemsList;
-        this.soldItemsList = new HashMap<>();
+        this.itemsAvailable = new HashMap<>();
+
         this.registers = new HashSet<>();
+        this.cashiersList = new HashSet<>();
+
+        this.overchargeByCategory = new EnumMap<>(ItemCategory.class);
+    }
+
+    // store with empty collections
+    public Store( String name, int daysTillExpirationAllowed, int percentageSale) {
+        this.name = name;
+        this.daysTillExpirationAllowed = daysTillExpirationAllowed;
+        this.percentageSale = percentageSale;
+        this.soldItemsList = new HashMap<>();
+        this.itemsAvailable = new HashMap<>();
+
+        this.registers = new HashSet<>();
+        this.cashiersList = new HashSet<>();
 
         this.overchargeByCategory = new EnumMap<>(ItemCategory.class);
     }
@@ -76,6 +88,7 @@ public class Store implements RevenueServices, CashierServices {
 
 
     // Assign a cashier to a register
+    // if the cashier had been assiged to a different register before we should remove him from the old
     @Override
     public boolean assignCashier(Cashier cashier,  Register register) throws RegisterUnavailableException, CashierUnavailableException {
         if (!registers.contains(register)){
@@ -198,11 +211,11 @@ public class Store implements RevenueServices, CashierServices {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Store store = (Store) o;
-        return daysTillExpirationAllowed == store.daysTillExpirationAllowed && percentageSale == store.percentageSale && Objects.equals(name, store.name) && Objects.equals(cashiersList, store.cashiersList) && Objects.equals(itemsAvailable, store.itemsAvailable) && Objects.equals(soldItemsList, store.soldItemsList) && Objects.equals(registers, store.registers) && Objects.equals(overchargeByCategory, store.overchargeByCategory);
+        return Objects.equals(name, store.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, daysTillExpirationAllowed, percentageSale, cashiersList, itemsAvailable, soldItemsList, registers, overchargeByCategory);
+        return Objects.hash(name);
     }
 }

@@ -9,6 +9,7 @@ import Utils.IOreceipt;
 import exeptions.IncorrectClientBudgetException;
 import exeptions.ItemAmountUnavailableException;
 import exeptions.ItemHasExpiredException;
+import exeptions.NoItemsAvailableException;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -21,6 +22,37 @@ public class Register implements TransactionServices, ClientQueueServices, Recei
     private HashSet<Receipt> receipts ; // hash set differentiating by id
     private Store store;
 
+    public Register(Cashier cashier, Queue<Client> clients, Store store , HashSet<Receipt> receipts ) {
+        num_instances++;
+        registerNumber = num_instances;
+
+        this.cashier = cashier;
+        this.clients = clients;
+        this.receipts = receipts;
+        this.store = store;
+    }
+
+    public Register(Cashier cashier, Store store , HashSet<Receipt> receipts ) {
+        num_instances++;
+        registerNumber = num_instances;
+
+        this.cashier = cashier;
+        this.clients = new ArrayDeque<>();
+        this.receipts = receipts;
+        this.store = store;
+    }
+
+    public Register(Cashier cashier, Queue<Client> clients, Store store) {
+        num_instances++;
+        registerNumber = num_instances;
+
+        this.cashier = cashier;
+        this.clients = clients;
+        this.receipts = new HashSet<>();
+        this.store = store;
+    }
+
+
     public Register(Cashier cashier, Store store) {
         num_instances++;
         registerNumber = num_instances;
@@ -30,18 +62,6 @@ public class Register implements TransactionServices, ClientQueueServices, Recei
         this.receipts = new HashSet<>();
         this.store = store;
     }
-
-
-    public Register(Cashier cashier, List<Client> client, Store store) {
-        num_instances++;
-        registerNumber = num_instances;
-
-        this.cashier = cashier;
-        this.clients = new ArrayDeque<>();
-        this.receipts = new HashSet<>();
-        this.store = store;
-    }
-
 
     // -----  Client Queue operations  -----
     @Override
@@ -75,9 +95,8 @@ public class Register implements TransactionServices, ClientQueueServices, Recei
     // 2. Calculate the sum of the transaction - throw exception if one of the items has less than enough units
 
     // remove expired item from the client's items
-    public boolean removeExpiredItem(Item item, Client client){
-        client.getItems().remove(item);
-        return true;
+    public BigDecimal removeExpiredItem(Item item, Client client){
+        return client.getItems().remove(item);
     }
 
     @Override
@@ -125,39 +144,39 @@ public class Register implements TransactionServices, ClientQueueServices, Recei
 
     // 5. Update the store inventory of items that have been sold
     @Override
-    public boolean addItemsToSold(Client client){
+    public Map<Item, BigDecimal> addItemsToSold(Client client){
 
         for (Map.Entry<Item, BigDecimal> entry: client.getItems().entrySet()) {
             Item item = entry.getKey();
             BigDecimal quantity = entry.getValue();
 
             if (store.getSoldItemsList().containsKey(item)) {
-
                 BigDecimal currentQuantity = store.getSoldItemsList().get(item);
-                BigDecimal newQuantity = currentQuantity.add( quantity );
-
-                store.getSoldItemsList().put( item, newQuantity );
-            } else {
-                store.getSoldItemsList().put( item, quantity );
+                quantity = currentQuantity.add( quantity );
             }
+            store.getSoldItemsList().put( item, quantity );
         }
-        return true;
+        return store.getSoldItemsList();
     }
 
     // 6.Update the available unites of each item sold
     @Override
-    public boolean removeSoldItemsFromAvailable(Client client){
+    public Map<Item, BigDecimal> removeSoldItemsFromAvailable(Client client) throws NoItemsAvailableException {
+        if (store.getItemsAvailable().isEmpty() || client.getItems().isEmpty()){
+            throw new NoItemsAvailableException("Either the store's inventory ot the client's shopping cart is empty");
+        }
+
         for (Item item : client.getItems().keySet()) {
             BigDecimal updatedQuantity = store.getItemsAvailable().get(item).subtract(  client.getItems().get(item)  )  ;
             store.getItemsAvailable().put( item, updatedQuantity );
         }
-        return true;
+        return store.getItemsAvailable();
     }
 
 
     // 7. The client pays and the transaction is complete
     @Override
-    public boolean finalizeTransaction(Client client, BigDecimal sumOwed) throws IncorrectClientBudgetException {
+    public boolean finalizeTransaction(Client client, BigDecimal sumOwed) throws IncorrectClientBudgetException, NoItemsAvailableException {
 
         if ( canTransactionPass(client, sumOwed) ){
             Receipt receipt = new Receipt(cashier, client.getItems());
@@ -193,6 +212,10 @@ public class Register implements TransactionServices, ClientQueueServices, Recei
     public int getRegisterNumber() {return registerNumber; }
 
     public Store getStore() {return store;}
+
+    public void setStore(Store store) {
+        this.store = store;
+    }
 
     public void setCashier(Cashier cashier) {
         this.cashier = cashier;

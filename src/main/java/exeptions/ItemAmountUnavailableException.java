@@ -1,5 +1,7 @@
 package exeptions;
 
+import java.math.BigDecimal;
+
 public class ItemAmountUnavailableException extends Exception {
 
     BigDecimal availableAmount;

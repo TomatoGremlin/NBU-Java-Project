@@ -13,16 +13,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ItemTest {
     Item item;
+    BigDecimal priceDelivery = BigDecimal.valueOf(100);
+
     Store store;
     int daysTillExpirationAllowed = 5;
+    int salePercentage = 20;
 
     @BeforeEach
     void setUp() throws IncorrectPriceValueException {
-        //ItemCategory.CONSUMABLE.setPercentageMarkup(10);
-        store = new Store("Lidl", daysTillExpirationAllowed, 20 );
+        store = new Store("Lidl", daysTillExpirationAllowed, salePercentage );
         store.setOverchargeByCategory(ItemCategory.CONSUMABLE, BigDecimal.valueOf(10));
 
-        item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, BigDecimal.valueOf(100), LocalDate.now().plusDays(10), store);
+        item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().plusDays(10), store);
     }
 
     @Test
