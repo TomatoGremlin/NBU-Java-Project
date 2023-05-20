@@ -63,6 +63,8 @@ class RegisterTest {
 
 
         store0 = new Store("Lidl", daysTillExpirationAllowed, salePercentage, cashiers , items, items, registers );
+        store0.setOverchargeByCategory(ItemCategory.CONSUMABLE, BigDecimal.valueOf(10));
+
         for (Item item : store0.getItemsAvailable().keySet()) {
             item.setStore(store0);
         }
@@ -74,10 +76,23 @@ class RegisterTest {
 
     @Test
     void addClient() {
+        client = new Client(BigDecimal.valueOf(300), items);
+        assertTrue(register.addClient(client));
+    }
+    @Test
+    void addClientAlreadyAdded() {
+        assertFalse(register.addClient(client));
     }
 
     @Test
     void removeClient() {
+        assertTrue(register.removeClient(client));
+    }
+
+    @Test
+    void removeClientNotInQueue() {
+        client = new Client(BigDecimal.valueOf(300), items);
+        assertFalse(register.removeClient(client));
     }
 
     @Test
@@ -97,7 +112,7 @@ class RegisterTest {
     }
     @Test
     void removeExpiredItemUnsuccessful() {
-        assertEquals(null, register.removeExpiredItem( item4, client) );
+        assertNull(register.removeExpiredItem(item4, client));
     }
 
     @Test

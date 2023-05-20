@@ -9,4 +9,8 @@ public class ItemAmountUnavailableException extends Exception {
         super(message);
         this.availableAmount = availableAmount;
     }
+
+    public BigDecimal getAvailableAmount() {
+        return availableAmount;
+    }
 }

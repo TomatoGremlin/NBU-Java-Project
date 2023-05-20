@@ -29,7 +29,7 @@ public class Cashier {
     public void setMonthlySalary(BigDecimal monthlySalary) throws IncorrectSalaryValueException {
         // if salary <= 0
         if (monthlySalary.compareTo(BigDecimal.valueOf(0)) != 1) {
-            throw new IncorrectSalaryValueException("Cashier's salary should not be a negative number or 0");
+            throw new IncorrectSalaryValueException("Cashier's salary should not be a negative number or 0", monthlySalary);
         }
         this.monthlySalary = monthlySalary;
     }

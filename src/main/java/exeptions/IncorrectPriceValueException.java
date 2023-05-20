@@ -1,7 +1,9 @@
 package exeptions;
 
-public class IncorrectPriceValueException extends Exception {
-    public IncorrectPriceValueException(String message) {
-        super(message);
+import java.math.BigDecimal;
+
+public class IncorrectPriceValueException extends IncorrectMoneyValueException {
+    public IncorrectPriceValueException(String message, BigDecimal moneyValue) {
+        super(message,  moneyValue);
     }
 }

@@ -1,5 +1,6 @@
 package Store;
 
+import Store.Interfaces.SumServices;
 import Store.People.Cashier;
 
 import java.math.BigDecimal;
@@ -9,12 +10,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class Receipt {
+public class Receipt implements SumServices {
     private static int num_instances = 0;
     private final int id_number;
-    private Cashier cashier;
-    private LocalDateTime dateTime;
-    private Map<Item, BigDecimal> itemsBought ;
+    private final Cashier cashier;
+    private final LocalDateTime dateTime;
+    private final Map<Item, BigDecimal> itemsBought ;
 
 
 
@@ -26,6 +27,14 @@ public class Receipt {
         this.itemsBought = itemsBoughtList;
     }
 
+    public Receipt(  Map<Item, BigDecimal> itemsBoughtList ) {
+        num_instances++;
+        this.id_number = num_instances;
+        this.dateTime = LocalDateTime.now();
+        this.itemsBought = itemsBoughtList;
+        cashier = null;
+    }
+
     //empty
     public Receipt( Cashier cashier ) {
         num_instances++;
@@ -34,7 +43,15 @@ public class Receipt {
         this.dateTime = LocalDateTime.now();
         this.itemsBought = new HashMap<>();
     }
+    public Receipt(  ) {
+        num_instances++;
+        this.id_number = num_instances;
+        this.cashier = null;
+        this.dateTime = LocalDateTime.now();
+        this.itemsBought = new HashMap<>();
+    }
 
+    @Override
     public BigDecimal getTotalSumOfItems() {
         BigDecimal sum = BigDecimal.valueOf(0);
 
@@ -43,7 +60,7 @@ public class Receipt {
             BigDecimal unites = entry.getValue() ;
 
             //  sum += entry.getKey().calculateFinalSellingPrice() * entry.getValue();
-            sum = sum.add( price.multiply( price.multiply( unites )  ) ) ;
+            sum = sum.add( price.multiply(  unites   ) ) ;
         }
         return sum;
     }
@@ -70,7 +87,8 @@ public class Receipt {
     }
 
 
-    public String formatReceipt() {
+    @Override
+    public String toString() {
         StringBuilder receiptBuilder = new StringBuilder();
 
         // Receipt header

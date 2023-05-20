@@ -1,7 +1,9 @@
 package exeptions;
 
-public class IncorrectSalaryValueException extends Exception {
-    public IncorrectSalaryValueException(String message) {
-        super(message);
+import java.math.BigDecimal;
+
+public class IncorrectSalaryValueException extends IncorrectMoneyValueException {
+    public IncorrectSalaryValueException(String message,  BigDecimal moneyValue) {
+        super(message,  moneyValue);
     }
 }

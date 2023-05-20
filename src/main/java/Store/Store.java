@@ -88,14 +88,14 @@ public class Store implements RevenueServices, CashierServices {
 
 
     // Assign a cashier to a register
-    // if the cashier had been assiged to a different register before we should remove him from the old
+    // if the cashier had been assigned to a different register before we should remove him from the old
     @Override
     public boolean assignCashier(Cashier cashier,  Register register) throws RegisterUnavailableException, CashierUnavailableException {
         if (!registers.contains(register)){
-            throw new RegisterUnavailableException("The register you have chosen is unavailable");
+            throw new RegisterUnavailableException("The register you have chosen is unavailable", register);
         }
         if ( !cashiersList.contains(cashier) ){
-            throw new CashierUnavailableException("The cashier you have chosen is unavailable");
+            throw new CashierUnavailableException("The cashier you have chosen is unavailable", cashier);
         }
         if ( !register.getCashier().equals(cashier) ){
             register.setCashier(cashier);
@@ -125,7 +125,6 @@ public class Store implements RevenueServices, CashierServices {
 
          for ( Cashier currentCashier: cashiersList ) {
              // salaries += currentCashier.getMonthlySalary();
-
              salaries = salaries. add( currentCashier.getMonthlySalary() );
          }
          return salaries;

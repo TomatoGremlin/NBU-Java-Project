@@ -1,7 +1,9 @@
 package exeptions;
 
-public class IncorrectClientBudgetException extends Exception {
-    public IncorrectClientBudgetException(String message) {
-        super(message);
+import java.math.BigDecimal;
+
+public class IncorrectClientBudgetException extends IncorrectMoneyValueException {
+    public IncorrectClientBudgetException(String message,  BigDecimal moneyValue) {
+        super(message,  moneyValue);
     }
 }

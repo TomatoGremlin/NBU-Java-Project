@@ -16,7 +16,7 @@ import java.util.*;
 
 public class Register implements TransactionServices, ClientQueueServices, ReceiptServices {
     private static int num_instances = 0;
-    private int registerNumber;
+    private final int registerNumber;
     private Cashier cashier;
     private Queue<Client> clients ; // queue ( to keep the order of enqueuing) of linked hash set ( to have no repetitions of client )
     private HashSet<Receipt> receipts ; // hash set differentiating by id
@@ -85,11 +85,8 @@ public class Register implements TransactionServices, ClientQueueServices, Recei
     @Override
     public boolean checkForAvailability(Item item, BigDecimal itemAmount) {
         BigDecimal unitsAvailable = store.getItemsAvailable().get(item) ;
-        //         if (unitsAvailable < itemAmount)
-        if (unitsAvailable.compareTo(itemAmount) == -1){
-            return false;
-        }
-        return true;
+        //    if (unitsAvailable < itemAmount) - false
+        return unitsAvailable.compareTo(itemAmount) >= 0;
     }
 
     // 2. Calculate the sum of the transaction - throw exception if one of the items has less than enough units
@@ -110,8 +107,7 @@ public class Register implements TransactionServices, ClientQueueServices, Recei
                         " when " + entry.getValue() + " are needed", entry.getValue());
             }
             if( !entry.getKey().isSellable() ) {
-                removeExpiredItem(entry.getKey(), client);
-                throw new ItemHasExpiredException("Item cannot be sold because it has expired");
+                throw new ItemHasExpiredException("Item cannot be sold because it has expired", entry.getKey());
             }
 
             BigDecimal price = entry.getKey().calculateFinalSellingPrice();
@@ -125,9 +121,8 @@ public class Register implements TransactionServices, ClientQueueServices, Recei
     // 3. Check if the client has enough money to pay the sum
     @Override
     public boolean canTransactionPass(Client client, BigDecimal sumOwed){
-        // if client.getBudget() < sumOwed
-        if (client.getBudget().compareTo( sumOwed ) == -1 ){  return false; }
-        return true;
+        // if client.getBudget() < sumOwed - false
+        return client.getBudget().compareTo(sumOwed) >= 0;
     }
 
     // 4. Give the client a Receipt
@@ -163,7 +158,7 @@ public class Register implements TransactionServices, ClientQueueServices, Recei
     @Override
     public Map<Item, BigDecimal> removeSoldItemsFromAvailable(Client client) throws NoItemsAvailableException {
         if (store.getItemsAvailable().isEmpty() || client.getItems().isEmpty()){
-            throw new NoItemsAvailableException("Either the store's inventory ot the client's shopping cart is empty");
+            throw new NoItemsAvailableException("Either the store's inventory or the client's shopping cart is empty");
         }
 
         for (Item item : client.getItems().keySet()) {

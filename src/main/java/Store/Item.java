@@ -16,7 +16,7 @@ public class Item implements DeliveryServices, ItemPriceServices {
     private String name;
     private BigDecimal deliveryPrice;
     private ItemCategory category;
-    private LocalDate expirationDate;
+    private final LocalDate expirationDate;
 
     private Store store;
 
@@ -29,21 +29,27 @@ public class Item implements DeliveryServices, ItemPriceServices {
         this.expirationDate = expirationDate;
         this.store = store;
     }
+    public Item(String idNumber, String name,  ItemCategory category, BigDecimal deliveryPrice, LocalDate expirationDate) throws IncorrectPriceValueException {
+
+        this.idNumber = idNumber;
+        this.name = name;
+        setDeliveryPrice( deliveryPrice );
+        this.category = category;
+        this.expirationDate = expirationDate;
+        this.store = null;
+    }
 
     public void setDeliveryPrice(BigDecimal deliveryPrice) throws IncorrectPriceValueException {
         //deliveryPrice <= 0
-        if ( deliveryPrice.compareTo( BigDecimal.valueOf(0) ) != 1 ){
-            throw new IncorrectPriceValueException("The delivery price of an item should not be negative or 0");
+        if ( deliveryPrice.compareTo( BigDecimal.valueOf(0) ) <= 0 ){
+            throw new IncorrectPriceValueException("The delivery price of an item should not be negative or 0", deliveryPrice);
         }
         this.deliveryPrice = deliveryPrice;
     }
 
     // 1. See how many days there are left till expiration of product
     public long getDaysTillExpiration(){
-        Duration duration = Duration.between( LocalDate.now().atStartOfDay(), expirationDate.atStartOfDay() );
-        long remainingDays = duration.toDays();
-
-        return remainingDays;
+        return Duration.between( LocalDate.now().atStartOfDay(), expirationDate.atStartOfDay() ) . toDays();
     }
 
 
@@ -52,7 +58,7 @@ public class Item implements DeliveryServices, ItemPriceServices {
     public BigDecimal calculatePrice() {
         //  deliveryPrice + ( deliveryPrice * itemOvercharge ) / 100 ;
         BigDecimal itemOvercharge = store.getOverchargeByCategory(category);
-        return deliveryPrice.add ( (deliveryPrice.multiply(itemOvercharge) ).divide( BigDecimal.valueOf(100) ) );
+        return deliveryPrice.add ( (deliveryPrice.multiply(itemOvercharge) ). divide( BigDecimal.valueOf(100) ) );
     }
 
     // 3. Calculate the price the item will sell for (adjust if the expiration is near)
@@ -64,7 +70,7 @@ public class Item implements DeliveryServices, ItemPriceServices {
             BigDecimal sale = BigDecimal.valueOf( store.getPercentageSale() ) ;
 
             //   sellingPrice - ( sellingPrice * sale ) / 100;
-            return sellingPrice.subtract ( sellingPrice.multiply(sale)  ).divide( BigDecimal.valueOf(100) ) ;
+            return sellingPrice.subtract ( sellingPrice.multiply(sale)  ). divide( BigDecimal.valueOf(100) ) ;
         }
         return sellingPrice;
     }
@@ -72,19 +78,13 @@ public class Item implements DeliveryServices, ItemPriceServices {
     // 4. Check if it has already expired
     @Override
     public boolean hasExpired(){
-        if(getDaysTillExpiration() < 0) {
-            return true;
-        }
-        return false;
+        return getDaysTillExpiration() < 0;
     }
 
     // 5. Sell if it has not, do not sell if it has
     @Override
     public boolean isSellable() {
-        if(hasExpired()){
-            return false;
-        }
-        return true;
+        return !hasExpired();
     }
 
     //6. Put in store inventory
@@ -92,7 +92,7 @@ public class Item implements DeliveryServices, ItemPriceServices {
     @Override
     public boolean putInAvailable(BigDecimal units) throws ItemHasExpiredException {
         if (!isSellable()){
-            throw new ItemHasExpiredException("Item cannot be sold because it has expired");
+            throw new ItemHasExpiredException("Item cannot be sold because it has expired", this);
         }
 
         if (store.getItemsAvailable().containsKey(this)){

@@ -19,8 +19,8 @@ public class Client {
 
     public void setBudget(BigDecimal budget) throws IncorrectClientBudgetException {
         // if budget < 0
-        if (budget.compareTo( BigDecimal.valueOf( 0 )  ) == -1  ){
-            throw new IncorrectClientBudgetException("A client's budget should not be negative ");
+        if (budget.compareTo(BigDecimal.valueOf(0)) < 0){
+            throw new IncorrectClientBudgetException("A client's budget should not be negative", budget);
         }
         this.budget = budget;
     }
