@@ -1,7 +1,7 @@
 package Store;
 
-import Store.Interfaces.CashierServices;
-import Store.Interfaces.RevenueServices;
+import Store.Interfaces.storeInterfaces.CashierServices;
+import Store.Interfaces.storeInterfaces.RevenueServices;
 import Store.People.Cashier;
 import Store.enums.ItemCategory;
 import exeptions.CashierUnavailableException;
@@ -42,6 +42,19 @@ public class Store implements RevenueServices, CashierServices {
         this.percentageSale = percentageSale;
         this.cashiersList = cashiersList;
         this.itemsAvailable = itemsAvailable;
+        this.soldItemsList = new HashMap<>();
+        this.registers = new HashSet<>();
+
+        this.overchargeByCategory = new EnumMap<>(ItemCategory.class);
+    }
+
+    //  cashiers
+    public Store( String name , int daysTillExpirationAllowed, int percentageSale, HashSet<Cashier> cashiersList ) {
+        this.name = name;
+        this.daysTillExpirationAllowed = daysTillExpirationAllowed;
+        this.percentageSale = percentageSale;
+        this.cashiersList = cashiersList;
+        this.itemsAvailable = new HashMap<>();
         this.soldItemsList = new HashMap<>();
         this.registers = new HashSet<>();
 
@@ -183,6 +196,10 @@ public class Store implements RevenueServices, CashierServices {
 
     public HashSet<Register> getRegisters() {
         return registers;
+    }
+
+    public void setRegisters(HashSet<Register> registers) {
+        this.registers = registers;
     }
 
     public String getName() {

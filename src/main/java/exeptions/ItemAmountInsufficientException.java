@@ -2,10 +2,10 @@ package exeptions;
 
 import java.math.BigDecimal;
 
-public class ItemAmountUnavailableException extends Exception {
+public class ItemAmountInsufficientException extends Exception {
 
     BigDecimal availableAmount;
-    public ItemAmountUnavailableException(String message, BigDecimal availableAmount) {
+    public ItemAmountInsufficientException(String message, BigDecimal availableAmount) {
         super(message);
         this.availableAmount = availableAmount;
     }

@@ -1,7 +1,7 @@
 import Store.Item;
 import Store.Store;
 import Store.enums.ItemCategory;
-import exeptions.IncorrectPriceValueException;
+import exeptions.moneyExceptions.IncorrectPriceValueException;
 import exeptions.ItemHasExpiredException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

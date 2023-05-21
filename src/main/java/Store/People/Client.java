@@ -1,10 +1,9 @@
 package Store.People;
 
 import Store.Item;
-import exeptions.IncorrectClientBudgetException;
+import exeptions.moneyExceptions.IncorrectClientBudgetException;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -31,6 +30,10 @@ public class Client {
 
     public Map<Item, BigDecimal> getItems() {
         return items;
+    }
+
+    public void setItems(Map<Item, BigDecimal> items) {
+        this.items = items;
     }
 
     @Override

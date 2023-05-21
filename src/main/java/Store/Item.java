@@ -1,9 +1,9 @@
 package Store;
 
-import Store.Interfaces.DeliveryServices;
-import Store.Interfaces.ItemPriceServices;
+import Store.Interfaces.itemInterfaces.DeliveryServices;
+import Store.Interfaces.itemInterfaces.ItemPriceServices;
 import Store.enums.ItemCategory;
-import exeptions.IncorrectPriceValueException;
+import exeptions.moneyExceptions.IncorrectPriceValueException;
 import exeptions.ItemHasExpiredException;
 
 import java.math.BigDecimal;
@@ -38,6 +38,17 @@ public class Item implements DeliveryServices, ItemPriceServices {
         this.expirationDate = expirationDate;
         this.store = null;
     }
+
+    public Item(Item item) throws IncorrectPriceValueException {
+
+        this.idNumber = item.idNumber;
+        this.name = item.name;
+        setDeliveryPrice( item.deliveryPrice );
+        this.category = item.category;
+        this.expirationDate = item.expirationDate;
+        this.store = item.store;
+    }
+
 
     public void setDeliveryPrice(BigDecimal deliveryPrice) throws IncorrectPriceValueException {
         //deliveryPrice <= 0

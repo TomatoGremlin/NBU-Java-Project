@@ -8,10 +8,9 @@ import Store.People.Cashier;
 import Store.Store;
 
 import Store.enums.ItemCategory;
-import exeptions.IncorrectPriceValueException;
-import exeptions.ItemAmountUnavailableException;
-import exeptions.ItemHasExpiredException;
-import exeptions.NoItemsAvailableException;
+import exeptions.*;
+import exeptions.moneyExceptions.IncorrectClientBudgetException;
+import exeptions.moneyExceptions.IncorrectPriceValueException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,23 +42,23 @@ class RegisterTest {
         store.setOverchargeByCategory(ItemCategory.CONSUMABLE, BigDecimal.valueOf(10));
 
         // items
-        item1 = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().plusDays(10), store);
-        item2 = new Item("A2", "Jam",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().plusDays(10), store);
-        item3 = new Item("A3", "Bread",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().plusDays(10), store);
+        item1 = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().plusDays(10));
+        item2 = new Item("A2", "Jam",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().plusDays(10));
+        item3 = new Item("A3", "Bread",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().plusDays(10));
         items = new HashMap<Item, BigDecimal>( Map.of(item1, itemUnites, item2, itemUnites, item3, itemUnites) );
 
         //cashier
         cashier = new Cashier("Bob", "C1", cashierSalary);
-        cashiers = new HashSet<>(Arrays.asList(cashier));
+        cashiers = new HashSet<>(List.of(cashier));
 
 
         //client
         client = new Client(clientBudget, items);
-        Queue<Client> clients = new ArrayDeque<>(Arrays.asList(client));
+        Queue<Client> clients = new ArrayDeque<>(List.of(client));
 
         //register
         register = new Register(cashier, clients, store);
-        registers = new HashSet<>(Arrays.asList(register));
+        registers = new HashSet<>(List.of(register));
 
 
         store0 = new Store("Lidl", daysTillExpirationAllowed, salePercentage, cashiers , items, items, registers );
@@ -71,7 +70,7 @@ class RegisterTest {
         for (Register register:store0.getRegisters()) {
             register.setStore(store0);
         }
-        item4 = new Item("A4", "Banana",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().plusDays(10), store0);
+        item4 = new Item("A4", "Banana",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().minusDays(1), store0);
     }
 
     @Test
@@ -116,19 +115,25 @@ class RegisterTest {
     }
 
     @Test
-    void scanItems() throws ItemHasExpiredException, ItemAmountUnavailableException {
+    void scanItems() throws ItemHasExpiredException, ItemAmountInsufficientException {
         BigDecimal expected = BigDecimal.valueOf( 6*110 );
         assertEquals(expected, register.scanItems(client));
     }
 
     @Test
-    void scanItemsExpiredItemFound() throws ItemHasExpiredException, ItemAmountUnavailableException {
+    void scanItemsExpiredItemFound() throws ItemHasExpiredException, ItemAmountInsufficientException, IncorrectPriceValueException {
+        items = new HashMap<Item, BigDecimal>( Map.of(item1, itemUnites, item2, itemUnites, item4, itemUnites) );
+        client.setItems(items);
         assertThrows(ItemHasExpiredException.class, ()->register.scanItems(client));
     }
 
     @Test
-    void scanItemsItem() throws ItemHasExpiredException, ItemAmountUnavailableException {
-        assertThrows(ItemAmountUnavailableException.class, ()->register.scanItems(client));
+    void scanItemsItemInsufficientAmount() throws ItemHasExpiredException, ItemAmountInsufficientException {
+        //client.getItems().put(new Item(), itemUnites.add(BigDecimal.valueOf(2)));
+        System.out.println( client.getItems().get(item1));
+        System.out.println( store0.getItemsAvailable().get(item1));
+
+        assertThrows(ItemAmountInsufficientException.class, ()->register.scanItems(client));
     }
 
 
@@ -197,6 +202,15 @@ class RegisterTest {
     }
 
     @Test
-    void finalizeTransaction() {
+    void finalizeTransactionPass() throws IncorrectClientBudgetException, NoItemsAvailableException {
+        register.getCashier().setRegister(register);
+        assertTrue(register.finalizeTransaction(client, clientBudget .subtract(BigDecimal.valueOf(1)) ));
     }
+
+    @Test
+    void finalizeTransactionNoPass() throws IncorrectClientBudgetException, NoItemsAvailableException {
+        register.getCashier().setRegister(register);
+        assertFalse(register.finalizeTransaction(client, clientBudget.add(BigDecimal.valueOf(1) ) ));
+    }
+
 }

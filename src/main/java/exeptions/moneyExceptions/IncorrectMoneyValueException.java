@@ -1,4 +1,4 @@
-package exeptions;
+package exeptions.moneyExceptions;
 
 import java.math.BigDecimal;
 

@@ -7,7 +7,7 @@ import Store.Receipt;
 
 import Store.enums.ItemCategory;
 import exeptions.CashierUnavailableException;
-import exeptions.IncorrectPriceValueException;
+import exeptions.moneyExceptions.IncorrectPriceValueException;
 import exeptions.RegisterUnavailableException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

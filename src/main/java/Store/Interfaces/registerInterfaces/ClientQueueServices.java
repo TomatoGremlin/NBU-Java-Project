@@ -1,4 +1,4 @@
-package Store.Interfaces;
+package Store.Interfaces.registerInterfaces;
 
 import Store.People.Client;
 

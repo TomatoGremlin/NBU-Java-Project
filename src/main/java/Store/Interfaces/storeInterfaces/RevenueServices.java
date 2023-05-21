@@ -1,4 +1,4 @@
-package Store.Interfaces;
+package Store.Interfaces.storeInterfaces;
 
 import java.math.BigDecimal;
 

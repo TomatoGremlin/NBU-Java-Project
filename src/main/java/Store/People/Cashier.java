@@ -1,7 +1,7 @@
 package Store.People;
 
 import Store.Register;
-import exeptions.IncorrectSalaryValueException;
+import exeptions.moneyExceptions.IncorrectSalaryValueException;
 
 import java.math.BigDecimal;
 import java.util.Objects;

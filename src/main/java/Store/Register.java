@@ -1,20 +1,21 @@
 package Store;
 
-import Store.Interfaces.ClientQueueServices;
-import Store.Interfaces.ReceiptServices;
-import Store.Interfaces.TransactionServices;
+import Store.Interfaces.registerInterfaces.ItemsServices;
+import Store.Interfaces.registerInterfaces.ClientQueueServices;
+import Store.Interfaces.registerInterfaces.ReceiptServices;
+import Store.Interfaces.registerInterfaces.TransactionServices;
 import Store.People.Cashier;
 import Store.People.Client;
 import Utils.IOreceipt;
-import exeptions.IncorrectClientBudgetException;
-import exeptions.ItemAmountUnavailableException;
+import exeptions.moneyExceptions.IncorrectClientBudgetException;
+import exeptions.ItemAmountInsufficientException;
 import exeptions.ItemHasExpiredException;
 import exeptions.NoItemsAvailableException;
 
 import java.math.BigDecimal;
 import java.util.*;
 
-public class Register implements TransactionServices, ClientQueueServices, ReceiptServices {
+public class Register implements TransactionServices, ClientQueueServices, ItemsServices, ReceiptServices {
     private static int num_instances = 0;
     private final int registerNumber;
     private Cashier cashier;
@@ -63,6 +64,16 @@ public class Register implements TransactionServices, ClientQueueServices, Recei
         this.store = store;
     }
 
+    public Register( Store store) {
+        num_instances++;
+        registerNumber = num_instances;
+
+        this.cashier = null;
+        this.clients = new ArrayDeque<>();
+        this.receipts = new HashSet<>();
+        this.store = store;
+    }
+
     // -----  Client Queue operations  -----
     @Override
     public boolean addClient(Client newClient) {
@@ -97,17 +108,17 @@ public class Register implements TransactionServices, ClientQueueServices, Recei
     }
 
     @Override
-    public BigDecimal scanItems(Client client) throws ItemAmountUnavailableException, ItemHasExpiredException {
+    public BigDecimal scanItems(Client client) throws ItemAmountInsufficientException, ItemHasExpiredException {
         BigDecimal sumOwed = BigDecimal.valueOf(0);
 
         for (Map.Entry<Item, BigDecimal> entry: client.getItems( ).entrySet()) {
 
-            if (!checkForAvailability( entry.getKey(), entry.getValue() )){
-                throw new ItemAmountUnavailableException( entry.getKey().getName() + " only has " + entry.getValue() +
-                        " when " + entry.getValue() + " are needed", entry.getValue());
-            }
             if( !entry.getKey().isSellable() ) {
                 throw new ItemHasExpiredException("Item cannot be sold because it has expired", entry.getKey());
+            }
+            if (!checkForAvailability( entry.getKey(), entry.getValue() )){
+                throw new ItemAmountInsufficientException( entry.getKey().getName() + " only has " + entry.getValue() +
+                        " when " + entry.getValue() + " are needed", entry.getValue());
             }
 
             BigDecimal price = entry.getKey().calculateFinalSellingPrice();

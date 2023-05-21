@@ -1,9 +1,8 @@
-import Store.People.Cashier;
 import Store.Receipt;
 import Store.Item;
 import Store.Store;
 import Store.enums.ItemCategory;
-import exeptions.IncorrectPriceValueException;
+import exeptions.moneyExceptions.IncorrectPriceValueException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
