@@ -81,7 +81,7 @@ public class Item implements DeliveryServices, ItemPriceServices {
             BigDecimal sale = BigDecimal.valueOf( store.getPercentageSale() ) ;
 
             //   sellingPrice - ( sellingPrice * sale ) / 100;
-            return sellingPrice.subtract ( sellingPrice.multiply(sale)  ). divide( BigDecimal.valueOf(100) ) ;
+            return sellingPrice.subtract ( sellingPrice.multiply(sale)  . divide( BigDecimal.valueOf(100) ) ) ;
         }
         return sellingPrice;
     }

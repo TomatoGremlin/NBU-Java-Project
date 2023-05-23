@@ -26,7 +26,7 @@ class ReceiptTest {
         Item item1 = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().plusDays(10), store);
         Item item2 = new Item("A2", "Jam",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().plusDays(10), store);
         Item item3 = new Item("A3", "Bread",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().plusDays(10), store);
-        Map<Item, BigDecimal> items = new HashMap<Item, BigDecimal>( Map.of(item1, itemUnites, item2, itemUnites, item3, itemUnites) );
+        Map<Item, BigDecimal> items = new HashMap<>( Map.of(item1, itemUnites, item2, itemUnites, item3, itemUnites) );
 
         receipt = new Receipt(items);
 

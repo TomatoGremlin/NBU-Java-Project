@@ -53,7 +53,7 @@ class StoreTest {
         item1 = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().plusDays(10), store);
         Item item2 = new Item("A2", "Jam",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().plusDays(10), store);
         Item item3 = new Item("A3", "Bread",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().plusDays(10), store);
-        items = new HashMap<Item, BigDecimal>( Map.of(item1, itemUnites, item2, itemUnites, item3, itemUnites) );
+        items = new HashMap<>( Map.of(item1, itemUnites, item2, itemUnites, item3, itemUnites) );
 
         //cashiers
         cashier1 = new Cashier("Bob", "C1", cashierSalary);
@@ -80,7 +80,7 @@ class StoreTest {
         assertTrue(store.assignCashier( cashier1, register1 ));
     }
     @Test
-    void assignCashierRegisterUnavailable() throws CashierUnavailableException, RegisterUnavailableException {
+    void assignCashierRegisterUnavailable(){
         assertThrows(CashierUnavailableException.class, ()-> store.assignCashier( cashier4, register1 ));
     }
 

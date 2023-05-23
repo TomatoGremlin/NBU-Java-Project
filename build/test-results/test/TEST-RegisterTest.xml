@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="RegisterTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-05-21T00:25:59" hostname="LAPTOP-RB8RELHE" time="0.055">
-  <properties/>
-  <testcase name="finalizeTransactionPass()" classname="RegisterTest" time="0.055"/>
-  <system-out><![CDATA[[Lidl, Customer Receipt Copy, Receipt ID: e89f7ae0-c7ea-4f37-83a8-680512e5c586, Cashier: Bob, Date and Time: 2023-05-21 03:25:59, =====================================, Items Bought:, - Jam		2, 110, - Bread		2, 110, - Pickles Jar		2, 110, =====================================, Total: 660, ]
-]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

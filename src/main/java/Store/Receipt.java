@@ -65,16 +65,9 @@ public class Receipt implements SumServices {
 
     @Override
     public BigDecimal getTotalSumOfItems() {
-        BigDecimal sum = BigDecimal.valueOf(0);
-
-        for (Map.Entry<Item, BigDecimal> entry: itemsBought.entrySet()) {
-            BigDecimal price = entry.getKey().calculateFinalSellingPrice();
-            BigDecimal unites = entry.getValue() ;
-
-            //  sum += entry.getKey().calculateFinalSellingPrice() * entry.getValue();
-            sum = sum.add( price.multiply(  unites  ) ) ;
-        }
-        return sum;
+        return itemsBought.entrySet().stream()
+                .map( entry -> entry.getKey(). calculateFinalSellingPrice(). multiply( entry.getValue() ) )
+                .reduce( BigDecimal.ZERO, BigDecimal::add );
     }
 
 
@@ -98,7 +91,7 @@ public class Receipt implements SumServices {
         return itemsBought;
     }
 
-
+    // another to string
     @Override
     public String toString() {
         StringBuilder receiptBuilder = new StringBuilder();

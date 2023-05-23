@@ -215,6 +215,10 @@ public class Register implements TransactionServices, ClientQueueServices, Items
         return receipts;
     }
 
+    public void setReceipts(HashSet<Receipt> receipts) {
+        this.receipts = receipts;
+    }
+
     public int getRegisterNumber() {return registerNumber; }
 
     public Store getStore() {return store;}

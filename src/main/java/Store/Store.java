@@ -110,6 +110,8 @@ public class Store implements RevenueServices, CashierServices {
         if ( !cashiersList.contains(cashier) ){
             throw new CashierUnavailableException("The cashier you have chosen is unavailable", cashier);
         }
+
+        //throw exception
         if ( !register.getCashier().equals(cashier) ){
             register.setCashier(cashier);
             cashier.setRegister(register);
@@ -134,14 +136,10 @@ public class Store implements RevenueServices, CashierServices {
     // 2. Calculate the costs for the salaries of the employees
     @Override
     public BigDecimal calculateCashiersSalaries(){
-         BigDecimal salaries = BigDecimal.valueOf(0);
-
-         for ( Cashier currentCashier: cashiersList ) {
-             // salaries += currentCashier.getMonthlySalary();
-             salaries = salaries. add( currentCashier.getMonthlySalary() );
-         }
-         return salaries;
-     }
+        return cashiersList.stream()
+                .map(Cashier::getMonthlySalary)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 
 
     // 3. Calculate the sum the delivery will cost
@@ -160,7 +158,6 @@ public class Store implements RevenueServices, CashierServices {
      }
 
      // 4. Calculate the total revenue
-
 
 
 

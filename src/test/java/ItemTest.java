@@ -99,7 +99,7 @@ class ItemTest {
     }
 
     @Test
-    void putInAvailableExpired() throws ItemHasExpiredException, IncorrectPriceValueException {
+    void putInAvailableExpired() throws  IncorrectPriceValueException {
         item = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, BigDecimal.valueOf(100), LocalDate.now().minusDays(1), store);
 
         assertThrows(ItemHasExpiredException.class, ()->item.putInAvailable(BigDecimal.valueOf( 7 )) );

@@ -30,7 +30,7 @@ class RegisterTest {
 
     Register register; HashSet<Register> registers;
 
-    Map<Item, BigDecimal> items; Item item1, item2, item3, item4;
+    Map<Item, BigDecimal> items; Map<Item, BigDecimal> cart; Item item1, item2, item3, item4;
     BigDecimal itemUnites = BigDecimal.valueOf(2); BigDecimal priceDelivery = BigDecimal.valueOf(100);
 
     Client client;
@@ -39,13 +39,14 @@ class RegisterTest {
     @BeforeEach
     void setUp() throws IncorrectPriceValueException {
         store = new Store("Lidl", daysTillExpirationAllowed, salePercentage  );
-        store.setOverchargeByCategory(ItemCategory.CONSUMABLE, BigDecimal.valueOf(10));
 
         // items
         item1 = new Item("A1", "Pickles Jar",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().plusDays(10));
         item2 = new Item("A2", "Jam",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().plusDays(10));
         item3 = new Item("A3", "Bread",  ItemCategory.CONSUMABLE, priceDelivery, LocalDate.now().plusDays(10));
-        items = new HashMap<Item, BigDecimal>( Map.of(item1, itemUnites, item2, itemUnites, item3, itemUnites) );
+        items = new HashMap<>( Map.of(item1, itemUnites, item2, itemUnites, item3, itemUnites) );
+        cart = new HashMap<>( items );
+
 
         //cashier
         cashier = new Cashier("Bob", "C1", cashierSalary);
@@ -53,7 +54,7 @@ class RegisterTest {
 
 
         //client
-        client = new Client(clientBudget, items);
+        client = new Client(clientBudget, cart);
         Queue<Client> clients = new ArrayDeque<>(List.of(client));
 
         //register
@@ -90,12 +91,12 @@ class RegisterTest {
 
     @Test
     void removeClientNotInQueue() {
-        client = new Client(BigDecimal.valueOf(300), items);
+        client = new Client(BigDecimal.valueOf(300), cart);
         assertFalse(register.removeClient(client));
     }
 
     @Test
-    void checkForAvailabilityYes() throws IncorrectPriceValueException {
+    void checkForAvailabilityYes()  {
         assertTrue(register.checkForAvailability(item1, itemUnites));
     }
 
@@ -121,18 +122,15 @@ class RegisterTest {
     }
 
     @Test
-    void scanItemsExpiredItemFound() throws ItemHasExpiredException, ItemAmountInsufficientException, IncorrectPriceValueException {
-        items = new HashMap<Item, BigDecimal>( Map.of(item1, itemUnites, item2, itemUnites, item4, itemUnites) );
+    void scanItemsExpiredItemFound()  {
+        items = new HashMap<>( Map.of(item1, itemUnites, item2, itemUnites, item4, itemUnites) );
         client.setItems(items);
         assertThrows(ItemHasExpiredException.class, ()->register.scanItems(client));
     }
 
     @Test
-    void scanItemsItemInsufficientAmount() throws ItemHasExpiredException, ItemAmountInsufficientException {
-        //client.getItems().put(new Item(), itemUnites.add(BigDecimal.valueOf(2)));
-        System.out.println( client.getItems().get(item1));
-        System.out.println( store0.getItemsAvailable().get(item1));
-
+    void scanItemsItemInsufficientAmount()  {
+        client.getItems().put(item1, itemUnites.add(BigDecimal.valueOf(1)));
         assertThrows(ItemAmountInsufficientException.class, ()->register.scanItems(client));
     }
 
@@ -155,7 +153,9 @@ class RegisterTest {
 
     @Test
     void addReceiptUnsuccessful() {
-        //assertFalse(register.addReceipt());
+        Receipt receipt = new Receipt(cashier);
+        register.setReceipts( new HashSet<>(List.of(receipt)) );
+        assertFalse(register.addReceipt(receipt));
     }
 
     @Test
@@ -190,13 +190,13 @@ class RegisterTest {
     }
 
     @Test
-    void removeSoldItemsFromAvailableStoreInventoryEmpty() throws NoItemsAvailableException {
+    void removeSoldItemsFromAvailableStoreInventoryEmpty()  {
         register.setStore(store);
         assertThrows(NoItemsAvailableException.class, ()->register.removeSoldItemsFromAvailable(client));
     }
 
     @Test
-    void removeSoldItemsFromAvailableClientListEmpty() throws NoItemsAvailableException {
+    void removeSoldItemsFromAvailableClientListEmpty()  {
         client = new Client(clientBudget, new HashMap<>());
         assertThrows(NoItemsAvailableException.class, ()->register.removeSoldItemsFromAvailable(client));
     }

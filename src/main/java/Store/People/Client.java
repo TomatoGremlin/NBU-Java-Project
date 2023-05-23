@@ -23,6 +23,7 @@ public class Client {
         }
         this.budget = budget;
     }
+    // add items
 
     public BigDecimal getBudget() {
         return budget;
