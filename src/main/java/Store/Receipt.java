@@ -14,7 +14,7 @@ import java.util.UUID;
 public class Receipt implements SumServices {
     private static int num_instances = 0;
     private final int id_number;
-    UUID uuid ;
+    private final UUID uuid ;
 
     private final Cashier cashier;
     private final LocalDateTime dateTime;
@@ -79,6 +79,10 @@ public class Receipt implements SumServices {
         return id_number;
     }
 
+    public UUID getUuid() {
+        return uuid;
+    }
+
     public Cashier getCashier() {
         return cashier;
     }
@@ -117,7 +121,7 @@ public class Receipt implements SumServices {
         receiptBuilder.append("=====================================").append("\n");
 
         // Receipt footer
-        receiptBuilder.append("Total: ").append(getTotalSumOfItems()).append("\n");
+        receiptBuilder.append("Total: ").append(getTotalSumOfItems()).append("\n\n");
 
         return receiptBuilder.toString();
     }
@@ -128,11 +132,11 @@ public class Receipt implements SumServices {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Receipt receipt = (Receipt) o;
-        return id_number == receipt.id_number;
+        return id_number == receipt.id_number && Objects.equals(uuid, receipt.uuid);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id_number);
+        return Objects.hash(id_number, uuid);
     }
 }

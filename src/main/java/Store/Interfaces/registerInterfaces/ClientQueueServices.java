@@ -4,8 +4,8 @@ import Store.People.Client;
 
 public interface ClientQueueServices {
 
-    public boolean addClient(Client newClient);
+    public boolean enqueueClient(Client newClient);
 
-    public boolean removeClient(Client client);
+    public boolean dequeueClient(Client client);
 
 }

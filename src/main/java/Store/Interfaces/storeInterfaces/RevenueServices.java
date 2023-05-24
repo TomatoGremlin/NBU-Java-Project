@@ -1,4 +1,6 @@
 package Store.Interfaces.storeInterfaces;
+import Store.Store;
+
 
 import java.math.BigDecimal;
 
@@ -17,4 +19,7 @@ public interface RevenueServices {
         //    calculateItemsSoldRevenue() - (calculateCashiersSalaries() + calculateDeliveryCosts()  );
         return calculateItemsSoldRevenue() .subtract (calculateCashiersSalaries() .add( calculateDeliveryCosts() )  );
     }
+
+    // print revenue information
+    public  String printRevenueInfo();
 }

@@ -76,14 +76,14 @@ public class Register implements TransactionServices, ClientQueueServices, Items
 
     // -----  Client Queue operations  -----
     @Override
-    public boolean addClient(Client newClient) {
+    public boolean enqueueClient(Client newClient) {
         if ( !clients.contains(newClient) ) {
             return clients.add(newClient);
         }
         return false;
     }
     @Override
-    public boolean removeClient(Client client) {
+    public boolean dequeueClient(Client client) {
         if ( clients.contains(client) ) {
             return clients.remove(client);
         }
@@ -196,7 +196,7 @@ public class Register implements TransactionServices, ClientQueueServices, Items
             addItemsToSold(client);
             removeSoldItemsFromAvailable(client);
 
-            removeClient(client);
+            dequeueClient(client);
             return true;
         }
         return false;

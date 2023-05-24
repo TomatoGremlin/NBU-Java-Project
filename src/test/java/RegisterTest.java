@@ -77,22 +77,22 @@ class RegisterTest {
     @Test
     void addClient() {
         client = new Client(BigDecimal.valueOf(300), items);
-        assertTrue(register.addClient(client));
+        assertTrue(register.enqueueClient(client));
     }
     @Test
     void addClientAlreadyAdded() {
-        assertFalse(register.addClient(client));
+        assertFalse(register.enqueueClient(client));
     }
 
     @Test
     void removeClient() {
-        assertTrue(register.removeClient(client));
+        assertTrue(register.dequeueClient(client));
     }
 
     @Test
     void removeClientNotInQueue() {
         client = new Client(BigDecimal.valueOf(300), cart);
-        assertFalse(register.removeClient(client));
+        assertFalse(register.dequeueClient(client));
     }
 
     @Test

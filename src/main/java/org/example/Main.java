@@ -64,7 +64,8 @@ public class Main {
         HashMap<Item, BigDecimal> cart = new HashMap<>( Map.of(item1, BigDecimal.valueOf(5), item2, BigDecimal.valueOf(10)) );
         Client client1 = new Client(BigDecimal.valueOf( 100 ), cart);
 
-        register1.addClient(client1);
+        register1.enqueueClient(client1);
+
 
         // Clients' Transactions
         BigDecimal owedSum;
@@ -82,6 +83,7 @@ public class Main {
 
 
         // Store revenue
+        System.out.printf(store.printRevenueInfo());
 
     }
 }

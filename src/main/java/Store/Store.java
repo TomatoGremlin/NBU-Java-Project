@@ -112,7 +112,7 @@ public class Store implements RevenueServices, CashierServices {
         }
 
         //throw exception
-        if ( !register.getCashier().equals(cashier) ){
+        if ( register.getCashier() == null || !register.getCashier().equals(cashier) ){
             register.setCashier(cashier);
             cashier.setRegister(register);
         }
@@ -203,6 +203,19 @@ public class Store implements RevenueServices, CashierServices {
                 ", soldItemsList=" + soldItemsList +
                 ", receiptsList=" + registers +
                 '}';
+    }
+
+    @Override
+    public String printRevenueInfo(){
+        StringBuilder revenueInfo = new StringBuilder();
+        revenueInfo.append("Items sold revenue: " + calculateItemsSoldRevenue()).append("\n");
+        revenueInfo.append("Delivery costs for items : " + calculateDeliveryCosts()).append("\n");
+        revenueInfo.append("Cashiers' salary costs: " + calculateCashiersSalaries()).append("\n");
+        revenueInfo.append("Total revenue: "+ getName() + " revenue " + calculateTotalRevenue()).append("\n");
+
+        revenueInfo.append("Number of receipts : " + getNumberOfGivenReceipts()).append("\n");
+
+        return revenueInfo.toString();
     }
 
     @Override

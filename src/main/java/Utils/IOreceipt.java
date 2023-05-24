@@ -18,23 +18,17 @@ public class IOreceipt {
         }
     }
 
-    public static List<String> readReceipt(String inputFile ){
-        List<String> billData_list = new ArrayList<>();
+    public static String readReceipt(String inputFile ){
+        StringBuilder receiptBuilder = new StringBuilder();
 
-        try (  FileReader fin = new FileReader( inputFile )   ){
-
-            BufferedReader bufferedReader = new BufferedReader(fin);
+        try (BufferedReader reader = new BufferedReader( new FileReader( inputFile) )) {
             String line;
-            while( (line = bufferedReader.readLine()) != null ){
-                billData_list.add(line);
+            while ((line = reader.readLine()) != null) {
+                receiptBuilder.append(line).append("\n");
             }
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
-
-        return billData_list;
+        return receiptBuilder.toString();
     }
 }
