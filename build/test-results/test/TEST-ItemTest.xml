@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ItemTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2023-05-23T20:34:35" hostname="LAPTOP-RB8RELHE" time="0.056">
+  <properties/>
+  <testcase name="isSellableNo()" classname="ItemTest" time="0.03"/>
+  <testcase name="calculatePrice()" classname="ItemTest" time="0.004"/>
+  <testcase name="hasExpiredNo()" classname="ItemTest" time="0.001"/>
+  <testcase name="getDaysTillExpirationZero()" classname="ItemTest" time="0.002"/>
+  <testcase name="hasExpiredYes()" classname="ItemTest" time="0.001"/>
+  <testcase name="putInAvailable()" classname="ItemTest" time="0.001"/>
+  <testcase name="isSellableYes()" classname="ItemTest" time="0.001"/>
+  <testcase name="getDaysTillExpirationPositive()" classname="ItemTest" time="0.001"/>
+  <testcase name="calculateFinalSellingPriceNoSale()" classname="ItemTest" time="0.0"/>
+  <testcase name="getDaysTillExpirationNegative()" classname="ItemTest" time="0.001"/>
+  <testcase name="putInAvailableExpired()" classname="ItemTest" time="0.002"/>
+  <testcase name="calculateFinalSellingPriceWithSale()" classname="ItemTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

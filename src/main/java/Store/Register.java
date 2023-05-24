@@ -172,10 +172,10 @@ public class Register implements TransactionServices, ClientQueueServices, Items
             throw new NoItemsAvailableException("Either the store's inventory or the client's shopping cart is empty");
         }
 
-        for (Item item : client.getItems().keySet()) {
-            BigDecimal updatedQuantity = store.getItemsAvailable().get(item).subtract(  client.getItems().get(item)  )  ;
-            store.getItemsAvailable().put( item, updatedQuantity );
-        }
+        client.getItems().keySet().forEach( item -> {
+            BigDecimal updatedQuantity = store.getItemsAvailable().get(item). subtract( client.getItems().get(item) );
+            store.getItemsAvailable().put(item, updatedQuantity);
+        });
         return store.getItemsAvailable();
     }
 

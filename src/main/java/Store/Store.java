@@ -121,18 +121,13 @@ public class Store implements RevenueServices, CashierServices {
 
      // 1 . Calculate the sum of all the items sold
      @Override
-     public BigDecimal calculateItemsSoldRevenue(){
-        BigDecimal revenue = BigDecimal.valueOf(0);
+     public BigDecimal calculateItemsSoldRevenue() {
+         return soldItemsList.entrySet().stream()
+                 .map(entry -> entry.getKey().calculateFinalSellingPrice().multiply(entry.getValue()))
+                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+     }
 
-        for (Map.Entry<Item, BigDecimal> entry: soldItemsList.entrySet()) {
-            BigDecimal itemPrice = entry.getKey().calculateFinalSellingPrice();
-            BigDecimal itemUnites =  entry.getValue() ;
 
-            //   revenue += entry.getKey().calculateFinalSellingPrice() * entry.getValue();
-            revenue = revenue.add( itemPrice.multiply( itemUnites ) ) ;
-        }
-        return revenue;
-    }
     // 2. Calculate the costs for the salaries of the employees
     @Override
     public BigDecimal calculateCashiersSalaries(){
@@ -144,30 +139,21 @@ public class Store implements RevenueServices, CashierServices {
 
     // 3. Calculate the sum the delivery will cost
     @Override
-    public BigDecimal calculateDeliveryCosts(){
-         BigDecimal costs = BigDecimal.valueOf(0);
-
-         for (Map.Entry<Item, BigDecimal> entry: soldItemsList.entrySet()) {
-             BigDecimal deliveryPrice =  entry.getKey().getDeliveryPrice();
-             BigDecimal itemUnites =  entry.getValue() ;
-
-             //   costs += entry.getKey().getDeliveryPrice() * entry.getValue();
-             costs = costs.add( deliveryPrice.multiply( itemUnites )  );
-         }
-         return costs;
-     }
+    public BigDecimal calculateDeliveryCosts() {
+        return soldItemsList.entrySet().stream()
+                .map(entry -> entry.getKey().getDeliveryPrice().multiply(entry.getValue()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 
      // 4. Calculate the total revenue
 
 
 
     // To return how many receipts there have been
-    public int getNumberOfGivenReceipts(){
-        int numReceipts = 0;
-        for (Register register: registers) {
-            numReceipts += register.getReceipts().size();
-        }
-         return numReceipts;
+    public int getNumberOfGivenReceipts() {
+        return registers.stream()
+                .mapToInt(register -> register.getReceipts().size())
+                .sum();
     }
 
 
