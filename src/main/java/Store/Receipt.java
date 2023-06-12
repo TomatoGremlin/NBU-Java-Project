@@ -114,8 +114,10 @@ public class Receipt implements SumServices {
         for (Map.Entry<Item, BigDecimal> entry : itemsBought.entrySet()) {
             Item item = entry.getKey();
             BigDecimal quantity = entry.getValue();
-            receiptBuilder.append("- ").append(item.getName()).append("\t\t").append(quantity).append("\n");
+            receiptBuilder.append("- ").append(item.getName()).append("\t\t").append(quantity).append(" x ");
             receiptBuilder.append( item.calculateFinalSellingPrice() ).append("\n");
+            receiptBuilder.append( item.calculateFinalSellingPrice().multiply(quantity)  ).append("\n");
+
         }
 
         receiptBuilder.append("=====================================").append("\n");

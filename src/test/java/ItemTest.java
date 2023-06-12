@@ -5,17 +5,18 @@ import exeptions.moneyExceptions.IncorrectPriceValueException;
 import exeptions.ItemHasExpiredException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 class ItemTest {
+    Store store;
     Item item;
     BigDecimal priceDelivery = BigDecimal.valueOf(100);
 
-    Store store;
     int daysTillExpirationAllowed = 5;
     int salePercentage = 20;
 
